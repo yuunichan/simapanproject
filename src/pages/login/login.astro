@@ -1,7 +1,10 @@
 ---
 // SI MAPAN - Sistem ruMAh tangga dan kearsiPAN
 // Login Page Component
+
+import '../../styles/global.css'
 ---
+
 
 <!DOCTYPE html>
 <html lang="id">
@@ -14,289 +17,7 @@
     <link
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@700&display=swap"
       rel="stylesheet"
-    />
-    <style>
-      *, *::before, *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
-      :root {
-        --bg-start: #2d3a4a;
-        --bg-mid: #3d5068;
-        --bg-end: #6b8fa8;
-        --card-bg: #ffffff;
-        --text-primary: #1a1a2e;
-        --text-secondary: #6b7280;
-        --text-label: #374151;
-        --border: #e5e7eb;
-        --border-focus: #3b82f6;
-        --accent-red: #c0392b;
-        --accent-blue: #2563eb;
-        --dot-active: #3b82f6;
-        --dot-inactive: #d1d5db;
-        --btn-google-border: #e5e7eb;
-        --btn-google-bg: #ffffff;
-        --btn-google-hover: #f9fafb;
-        --shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
-        --radius: 16px;
-      }
-
-      html, body {
-        height: 100%;
-        width: 100%;
-      }
-
-      body {
-        font-family: 'DM Sans', sans-serif;
-        background: linear-gradient(
-          135deg,
-          var(--bg-start) 0%,
-          var(--bg-mid) 50%,
-          var(--bg-end) 100%
-        );
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 24px;
-        position: relative;
-        overflow: hidden;
-      }
-
-      /* Subtle background texture */
-      body::before {
-        content: '';
-        position: fixed;
-        inset: 0;
-        background:
-          radial-gradient(ellipse at 20% 80%, rgba(107, 143, 168, 0.3) 0%, transparent 50%),
-          radial-gradient(ellipse at 80% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
-        pointer-events: none;
-      }
-
-      /* Login Card */
-      .card {
-        background: var(--card-bg);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        padding: 40px 36px 36px;
-        width: 100%;
-        max-width: 400px;
-        position: relative;
-        animation: cardIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
-      }
-
-      @keyframes cardIn {
-        from {
-          opacity: 0;
-          transform: translateY(24px) scale(0.97);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
-      }
-
-      /* Logo Area */
-      .logo-area {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-bottom: 28px;
-        animation: fadeUp 0.5s 0.1s both;
-      }
-
-      .logo-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border: 2.5px solid var(--accent-red);
-        border-radius: 50px;
-        padding: 6px 18px;
-        margin-bottom: 6px;
-      }
-
-      .logo-text {
-        font-family: 'DM Sans', sans-serif;
-        font-size: 22px;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        color: var(--accent-red);
-      }
-
-      .logo-text span.si {
-        color: var(--accent-red);
-      }
-
-      .logo-text span.mapan {
-        color: var(--accent-red);
-      }
-
-      .logo-tagline {
-        font-size: 11.5px;
-        color: var(--text-secondary);
-        letter-spacing: 0.02em;
-        text-align: center;
-        line-height: 1.4;
-      }
-
-      .logo-tagline strong {
-        color: var(--accent-red);
-        font-weight: 600;
-      }
-
-      /* Step Dots */
-      .step-dots {
-        display: flex;
-        gap: 6px;
-        justify-content: center;
-        margin-bottom: 24px;
-        animation: fadeUp 0.5s 0.15s both;
-      }
-
-      .dot {
-        width: 24px;
-        height: 6px;
-        border-radius: 99px;
-        background: var(--dot-inactive);
-        transition: background 0.3s;
-      }
-
-      .dot.active {
-        background: var(--dot-active);
-        width: 28px;
-      }
-
-      /* Form Group */
-      .form-group {
-        margin-bottom: 20px;
-        animation: fadeUp 0.5s 0.2s both;
-      }
-
-      .form-label {
-        display: block;
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--text-label);
-        margin-bottom: 8px;
-      }
-
-      .select-wrapper {
-        position: relative;
-      }
-
-      .select-wrapper select {
-        appearance: none;
-        -webkit-appearance: none;
-        width: 100%;
-        padding: 11px 40px 11px 14px;
-        font-family: 'DM Sans', sans-serif;
-        font-size: 14.5px;
-        font-weight: 400;
-        color: var(--text-primary);
-        background: var(--card-bg);
-        border: 1.5px solid var(--border);
-        border-radius: 8px;
-        cursor: pointer;
-        outline: none;
-        transition: border-color 0.2s, box-shadow 0.2s;
-      }
-
-      .select-wrapper select:focus {
-        border-color: var(--border-focus);
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-      }
-
-      .select-wrapper select:hover {
-        border-color: #9ca3af;
-      }
-
-      .select-icon {
-        position: absolute;
-        right: 14px;
-        top: 50%;
-        transform: translateY(-50%);
-        pointer-events: none;
-        color: var(--text-secondary);
-      }
-
-      .select-icon svg {
-        display: block;
-        width: 16px;
-        height: 16px;
-      }
-
-      /* Divider */
-      .divider {
-        text-align: center;
-        font-size: 12.5px;
-        color: var(--text-secondary);
-        margin-bottom: 14px;
-        animation: fadeUp 0.5s 0.25s both;
-      }
-
-      /* Google Button */
-      .btn-google {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        width: 100%;
-        padding: 12px 20px;
-        background: var(--btn-google-bg);
-        border: 1.5px solid var(--btn-google-border);
-        border-radius: 8px;
-        font-family: 'DM Sans', sans-serif;
-        font-size: 14.5px;
-        font-weight: 500;
-        color: var(--text-primary);
-        cursor: pointer;
-        transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.15s;
-        text-decoration: none;
-        animation: fadeUp 0.5s 0.3s both;
-      }
-
-      .btn-google:hover {
-        background: var(--btn-google-hover);
-        border-color: #9ca3af;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        transform: translateY(-1px);
-      }
-
-      .btn-google:active {
-        transform: translateY(0);
-        box-shadow: none;
-      }
-
-      /* Google Icon */
-      .google-icon {
-        width: 18px;
-        height: 18px;
-        flex-shrink: 0;
-      }
-
-      @keyframes fadeUp {
-        from {
-          opacity: 0;
-          transform: translateY(12px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      /* Responsive */
-      @media (max-width: 480px) {
-        .card {
-          padding: 32px 24px 28px;
-        }
-      }
-    </style>
+    />    
   </head>
 
   <body>
@@ -368,27 +89,36 @@
         </svg>
         Lanjutkan dengan Google / Gmail
       </a>
-      <script>
-        document.getElementById('googleLoginBtn')
-       ?.addEventListener('click', (e) => {
 
-      e.preventDefault();
-
-      // arahkan ke halaman login2
-      window.location.href = '/login2';
-  });
-</script>
     </div>
 
-    <script>
-      // Handle Google login button
-      document.getElementById('googleLoginBtn')?.addEventListener('click', (e) => {
-        e.preventDefault();
-        const role = (document.getElementById('role') as HTMLSelectElement)?.value;
-        // TODO: Implement OAuth Google login with selected role
-        console.log('Login with Google, role:', role);
-        // window.location.href = `/auth/google?role=${role}`;
-      });
-    </script>
+<script>
+  document.getElementById('googleLoginBtn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    
+    // Mengambil nilai role dari dropdown select
+    const role = (document.getElementById('role') as HTMLSelectElement)?.value;
+    
+    console.log('Login attempt dengan role:', role);
+
+    // Jalankan logika pengecekan role
+    if (role === 'admin') {
+      // Jika yang dipilih admin, arahkan ke halaman form username & password admin
+      window.location.href = '../admin/admin-login';
+    } else if (role === 'manager') {
+      // Jika manager, langsung lempar ke dashboard manager dengan query string
+      window.location.href = `/dashboard?role=${role}`;
+    }
+    else if (role === 'staff') {
+      // Jika staff, langsung lempar ke dashboard staff dengan query string
+      window.location.href = `./login/gmail?role=${role}`;
+    } 
+    
+    else {
+      // Jika role lainnya atau belum dipilih
+      alert('Silakan pilih role yang valid!');
+    }
+  });
+</script>
   </body>
 </html>

@@ -1,0 +1,238 @@
+---
+// SI MAPAN - Sistem ruMAh tangga dan kearsiPAN
+// Step 3: Verifikasi Kode OTP
+import '../../styles/global.css';
+---
+
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SI MAPAN - Verifikasi OTP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    
+  </head>
+
+  <body>
+    <div class="card">
+
+      <!-- Logo -->
+      <div class="logo-area">
+        <div class="logo-badge">
+          <span class="logo-text">SI MAPAN</span>
+        </div>
+        <p class="logo-tagline">
+          Sistem ru<strong>MAh</strong> tangga dan kearsi<strong>PAN</strong>
+        </p>
+      </div>
+
+      <!-- Step dots: step 3 active -->
+      <div class="step-dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot active"></div>
+      </div>
+
+      <!-- Email chip -->
+      <div class="email-chip">
+        <span class="email-icon">
+          <svg viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+          </svg>
+        </span>
+        <span class="email-address" id="displayEmail">andi.prasetyo@bkn.go.id</span>
+      </div>
+
+      <!-- OTP hint -->
+      <p class="otp-hint">Masukkan 6 digit kode OTP</p>
+
+      <!-- Error banner -->
+      <div class="error-banner" id="errorBanner">Kode OTP tidak valid. Silakan coba lagi.</div>
+
+      <!-- OTP input boxes -->
+      <div class="otp-group" id="otpGroup">
+        <input class="otp-box" type="number" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="one-time-code" aria-label="Digit 1" />
+        <input class="otp-box" type="number" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 2" />
+        <input class="otp-box" type="number" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 3" />
+        <input class="otp-box" type="number" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 4" />
+        <input class="otp-box" type="number" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 5" />
+        <input class="otp-box" type="number" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 6" />
+      </div>
+
+      <!-- Verify button -->
+      <button class="btn-primary" id="verifyBtn" type="button" disabled>
+        <span class="spinner" id="spinner"></span>
+        <span class="btn-label">Verifikasi &amp; Masuk</span>
+      </button>
+
+      <!-- Resend link -->
+      <a href="#" class="resend-link disabled" id="resendLink">
+        Tidak menerima kode?
+        <span class="resend-timer" id="resendTimer">&nbsp;Kirim ulang</span>
+      </a>
+
+    </div>
+
+    <script>
+      // ── Populate email from URL param or sessionStorage ──
+      const params = new URLSearchParams(window.location.search);
+      const email  = params.get('email') || sessionStorage.getItem('simapan_email') || 'andi.prasetyo@bkn.go.id';
+      (document.getElementById('displayEmail') as HTMLElement).textContent = email;
+
+      // ── OTP box logic ──
+      const boxes      = Array.from(document.querySelectorAll('.otp-box')) as HTMLInputElement[];
+      const verifyBtn  = document.getElementById('verifyBtn')  as HTMLButtonElement;
+      const errorBanner= document.getElementById('errorBanner') as HTMLDivElement;
+      const resendLink = document.getElementById('resendLink') as HTMLAnchorElement;
+      const resendTimer= document.getElementById('resendTimer') as HTMLSpanElement;
+
+      function getOtp(): string {
+        return boxes.map(b => b.value).join('');
+      }
+
+      function updateBtn() {
+        verifyBtn.disabled = getOtp().length < 6;
+      }
+
+      function clearErrors() {
+        boxes.forEach(b => b.classList.remove('error'));
+        errorBanner.classList.remove('visible');
+      }
+
+      boxes.forEach((box, idx) => {
+        // Enforce single digit
+        box.addEventListener('input', () => {
+          clearErrors();
+          // Keep only last character typed
+          if (box.value.length > 1) box.value = box.value.slice(-1);
+          box.classList.toggle('filled', box.value !== '');
+          if (box.value && idx < boxes.length - 1) boxes[idx + 1].focus();
+          updateBtn();
+        });
+
+        box.addEventListener('keydown', (e: KeyboardEvent) => {
+          if (e.key === 'Backspace') {
+            if (!box.value && idx > 0) {
+              boxes[idx - 1].value = '';
+              boxes[idx - 1].classList.remove('filled');
+              boxes[idx - 1].focus();
+            } else {
+              box.value = '';
+              box.classList.remove('filled');
+            }
+            updateBtn();
+            e.preventDefault();
+          }
+          if (e.key === 'ArrowLeft'  && idx > 0)              { boxes[idx - 1].focus(); e.preventDefault(); }
+          if (e.key === 'ArrowRight' && idx < boxes.length-1) { boxes[idx + 1].focus(); e.preventDefault(); }
+          if (e.key === 'Enter' && getOtp().length === 6)      verifyBtn.click();
+        });
+
+        // Handle paste on any box
+        box.addEventListener('paste', (e: ClipboardEvent) => {
+          e.preventDefault();
+          const pasted = e.clipboardData?.getData('text').replace(/\D/g,'').slice(0,6) ?? '';
+          pasted.split('').forEach((ch, i) => {
+            if (boxes[i]) {
+              boxes[i].value = ch;
+              boxes[i].classList.add('filled');
+            }
+          });
+          const next = Math.min(pasted.length, boxes.length - 1);
+          boxes[next].focus();
+          updateBtn();
+        });
+      });
+
+      // ── Verify button ──
+      verifyBtn.addEventListener('click', async () => {
+        const otp = getOtp();
+        if (otp.length < 6) return;
+
+        verifyBtn.disabled = true;
+        verifyBtn.classList.add('loading');
+        errorBanner.classList.remove('visible');
+
+        try {
+          // TODO: replace with real API call
+          await new Promise(resolve => setTimeout(resolve, 1500));
+
+          // Simulate success / failure (remove in production)
+          const success = otp !== '000000';
+
+          if (success) {
+        console.log('OTP verified:', otp);
+
+        // 1. Ambil data parameter URL saat ini (misal: website.com/verification?role=admin)
+        const urlParams = new URLSearchParams(window.location.search);
+        const role = urlParams.get('role'); // akan mengambil string 'admin', 'manager', dll.
+
+        // 2. Arahkan halaman berdasarkan role yang didapat
+        if (role === 'user') {
+          window.location.href = '/user/dashboard';
+        } else if (role === 'manager') {
+          window.location.href = '/manager/dashboard'; // sesuaikan dengan folder rute managermu
+        } else if (role === 'staff') {
+          console.log("Nilai role sebelum pindah:", role); // Cek di console browser apakah muncul nilainya
+          window.location.href = `/staff/dashboard?role=${encodeURIComponent(role)}`;  
+              }else {
+
+        }
+
+      } else {
+        boxes.forEach(b => b.classList.add('error'));
+        errorBanner.classList.add('visible');
+        boxes[0].focus();
+      }} catch (err) {
+          errorBanner.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
+          errorBanner.classList.add('visible');
+        } finally {
+          verifyBtn.disabled = false;
+          verifyBtn.classList.remove('loading');
+        }
+      });
+
+      // ── Resend countdown (60 s) ──
+      let countdown = 60;
+
+      function startCountdown() {
+        resendLink.classList.add('disabled');
+        resendTimer.textContent = ` (${countdown}s)`;
+
+        const interval = setInterval(() => {
+          countdown--;
+          if (countdown <= 0) {
+            clearInterval(interval);
+            resendLink.classList.remove('disabled');
+            resendTimer.textContent = ' Kirim ulang';
+          } else {
+            resendTimer.textContent = ` (${countdown}s)`;
+          }
+        }, 1000);
+      }
+
+      startCountdown();
+
+      resendLink.addEventListener('click', async (e) => {
+        e.preventDefault();
+        if (resendLink.classList.contains('disabled')) return;
+        countdown = 60;
+        startCountdown();
+        boxes.forEach(b => { b.value = ''; b.classList.remove('filled','error'); });
+        updateBtn();
+        errorBanner.classList.remove('visible');
+        boxes[0].focus();
+
+        // TODO: call resend OTP API
+        console.log('Resend OTP to:', email);
+      });
+    </script>
+  </body>
+</html>
