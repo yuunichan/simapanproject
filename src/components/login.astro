@@ -1,0 +1,394 @@
+---
+// SI MAPAN - Sistem ruMAh tangga dan kearsiPAN
+// Login Page Component
+---
+
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SI MAPAN - Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg-start: #2d3a4a;
+        --bg-mid: #3d5068;
+        --bg-end: #6b8fa8;
+        --card-bg: #ffffff;
+        --text-primary: #1a1a2e;
+        --text-secondary: #6b7280;
+        --text-label: #374151;
+        --border: #e5e7eb;
+        --border-focus: #3b82f6;
+        --accent-red: #c0392b;
+        --accent-blue: #2563eb;
+        --dot-active: #3b82f6;
+        --dot-inactive: #d1d5db;
+        --btn-google-border: #e5e7eb;
+        --btn-google-bg: #ffffff;
+        --btn-google-hover: #f9fafb;
+        --shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+        --radius: 16px;
+      }
+
+      html, body {
+        height: 100%;
+        width: 100%;
+      }
+
+      body {
+        font-family: 'DM Sans', sans-serif;
+        background: linear-gradient(
+          135deg,
+          var(--bg-start) 0%,
+          var(--bg-mid) 50%,
+          var(--bg-end) 100%
+        );
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Subtle background texture */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(ellipse at 20% 80%, rgba(107, 143, 168, 0.3) 0%, transparent 50%),
+          radial-gradient(ellipse at 80% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+        pointer-events: none;
+      }
+
+      /* Login Card */
+      .card {
+        background: var(--card-bg);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 40px 36px 36px;
+        width: 100%;
+        max-width: 400px;
+        position: relative;
+        animation: cardIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+
+      @keyframes cardIn {
+        from {
+          opacity: 0;
+          transform: translateY(24px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      /* Logo Area */
+      .logo-area {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 28px;
+        animation: fadeUp 0.5s 0.1s both;
+      }
+
+      .logo-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 2.5px solid var(--accent-red);
+        border-radius: 50px;
+        padding: 6px 18px;
+        margin-bottom: 6px;
+      }
+
+      .logo-text {
+        font-family: 'DM Sans', sans-serif;
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        color: var(--accent-red);
+      }
+
+      .logo-text span.si {
+        color: var(--accent-red);
+      }
+
+      .logo-text span.mapan {
+        color: var(--accent-red);
+      }
+
+      .logo-tagline {
+        font-size: 11.5px;
+        color: var(--text-secondary);
+        letter-spacing: 0.02em;
+        text-align: center;
+        line-height: 1.4;
+      }
+
+      .logo-tagline strong {
+        color: var(--accent-red);
+        font-weight: 600;
+      }
+
+      /* Step Dots */
+      .step-dots {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+        margin-bottom: 24px;
+        animation: fadeUp 0.5s 0.15s both;
+      }
+
+      .dot {
+        width: 24px;
+        height: 6px;
+        border-radius: 99px;
+        background: var(--dot-inactive);
+        transition: background 0.3s;
+      }
+
+      .dot.active {
+        background: var(--dot-active);
+        width: 28px;
+      }
+
+      /* Form Group */
+      .form-group {
+        margin-bottom: 20px;
+        animation: fadeUp 0.5s 0.2s both;
+      }
+
+      .form-label {
+        display: block;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-label);
+        margin-bottom: 8px;
+      }
+
+      .select-wrapper {
+        position: relative;
+      }
+
+      .select-wrapper select {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 100%;
+        padding: 11px 40px 11px 14px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 14.5px;
+        font-weight: 400;
+        color: var(--text-primary);
+        background: var(--card-bg);
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        cursor: pointer;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+
+      .select-wrapper select:focus {
+        border-color: var(--border-focus);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+
+      .select-wrapper select:hover {
+        border-color: #9ca3af;
+      }
+
+      .select-icon {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        color: var(--text-secondary);
+      }
+
+      .select-icon svg {
+        display: block;
+        width: 16px;
+        height: 16px;
+      }
+
+      /* Divider */
+      .divider {
+        text-align: center;
+        font-size: 12.5px;
+        color: var(--text-secondary);
+        margin-bottom: 14px;
+        animation: fadeUp 0.5s 0.25s both;
+      }
+
+      /* Google Button */
+      .btn-google {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        padding: 12px 20px;
+        background: var(--btn-google-bg);
+        border: 1.5px solid var(--btn-google-border);
+        border-radius: 8px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 14.5px;
+        font-weight: 500;
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+        text-decoration: none;
+        animation: fadeUp 0.5s 0.3s both;
+      }
+
+      .btn-google:hover {
+        background: var(--btn-google-hover);
+        border-color: #9ca3af;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transform: translateY(-1px);
+      }
+
+      .btn-google:active {
+        transform: translateY(0);
+        box-shadow: none;
+      }
+
+      /* Google Icon */
+      .google-icon {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 480px) {
+        .card {
+          padding: 32px 24px 28px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="card">
+      <!-- Logo -->
+      <div class="logo-area">
+        <div class="logo-badge">
+          <span class="logo-text">
+            <span class="si">SI </span><span class="mapan">MAPAN</span>
+          </span>
+        </div>
+        <p class="logo-tagline">
+          Sistem ru<strong>MAh</strong> tangga dan kearsi<strong>PAN</strong>
+        </p>
+      </div>
+
+      <!-- Step Indicator -->
+      <div class="step-dots">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+
+      <!-- Role / Jabatan -->
+      <div class="form-group">
+        <label class="form-label" for="role">Role / Jabatan</label>
+        <div class="select-wrapper">
+          <select id="role" name="role">
+            <option value="user" selected>User</option>
+            <option value="admin">Admin</option>
+            <option value="manager">Manager</option>
+            <option value="staff">Staff</option>
+          </select>
+          <span class="select-icon">
+            <svg viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path
+                fill-rule="evenodd"
+                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <p class="divider">Masuk dengan akun Google</p>
+
+      <!-- Google Login Button -->
+      <a href="#" class="btn-google" id="googleLoginBtn">
+        <!-- Google "G" logo SVG -->
+        <svg class="google-icon" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"
+            fill="#4285F4"
+          />
+          <path
+            d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"
+            fill="#34A853"
+          />
+          <path
+            d="M3.964 10.706A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.038l3.007-2.332z"
+            fill="#FBBC05"
+          />
+          <path
+            d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z"
+            fill="#EA4335"
+          />
+        </svg>
+        Lanjutkan dengan Google / Gmail
+      </a>
+      <script>
+        document.getElementById('googleLoginBtn')
+       ?.addEventListener('click', (e) => {
+
+      e.preventDefault();
+
+      // arahkan ke halaman login2
+      window.location.href = '/login2';
+  });
+</script>
+    </div>
+
+    <script>
+      // Handle Google login button
+      document.getElementById('googleLoginBtn')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        const role = (document.getElementById('role') as HTMLSelectElement)?.value;
+        // TODO: Implement OAuth Google login with selected role
+        console.log('Login with Google, role:', role);
+        // window.location.href = `/auth/google?role=${role}`;
+      });
+    </script>
+  </body>
+</html>
