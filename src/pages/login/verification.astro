@@ -175,7 +175,10 @@ import '../../styles/global.css';
         const role = urlParams.get('role'); // akan mengambil string 'admin', 'manager', dll.
 
         // 2. Arahkan halaman berdasarkan role yang didapat
-        if (role === 'user') {
+        if (role === 'admin') {
+          console.log("Nilai role sebelum pindah:", role);
+          window.location.href = `/admin/dashboard?role=${encodeURIComponent(role)}`;
+        } else if(role === 'user') {
           window.location.href = '/user/dashboard';
         } else if (role === 'manager') {
           window.location.href = '/manager/dashboard'; // sesuaikan dengan folder rute managermu

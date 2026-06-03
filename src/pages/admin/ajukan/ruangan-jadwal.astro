@@ -1,0 +1,610 @@
+---
+// src/pages/admin/ruangan-jadwal.astro
+// Step 2 — Pilih Ruangan & Jadwal
+
+import Sidebar from '../../../components/sidebar_admin.astro';
+
+// Data ruangan (idealnya dari API/database)
+const rooms = [
+  {
+    id: 'aula',
+    name: 'Ruang Aula',
+    floor: 'Lantai 2',
+    gedung: 'Gedung 1',
+    capacity: '100–200',
+    status: 'busy',
+    fasilitas: ['Panggung', 'LCD Besar', 'Sound System', 'AC', 'Microphone'],
+    photos: ['/images/aula-1.jpg', '/images/aula-2.jpg', '/images/aula-3.jpg'],
+  },
+  {
+    id: 'mawar',
+    name: 'Ruang Mawar',
+    floor: 'Lantai 1',
+    gedung: 'Gedung 1',
+    capacity: '10–30',
+    status: 'available',
+    fasilitas: ['LCD', 'AC', 'Whiteboard'],
+    photos: ['/images/mawar-1.jpg'],
+  },
+  {
+    id: 'control',
+    name: 'Control Room',
+    floor: 'Lantai 1',
+    gedung: 'Gedung 1',
+    capacity: '0–10',
+    status: 'available',
+    fasilitas: ['Monitor', 'AC'],
+    photos: ['/images/control-1.jpg'],
+  },
+  {
+    id: 'data',
+    name: 'Ruang Data',
+    floor: 'Lantai 1',
+    gedung: 'Gedung 1',
+    capacity: '5–20',
+    status: 'available',
+    fasilitas: ['AC', 'Proyektor'],
+    photos: ['/images/data-1.jpg'],
+  },
+  {
+    id: 'kokpit',
+    name: 'Ruang Kokpit',
+    floor: 'Lantai 3',
+    gedung: 'Gedung 1',
+    capacity: '5–15',
+    status: 'available',
+    fasilitas: ['AC', 'TV', 'Whiteboard'],
+    photos: ['/images/kokpit-1.jpg'],
+  },
+  
+];
+
+// Hari & jam slot
+const jamSlots = [
+  '07:00','08:00','09:00','10:00','11:00','12:00',
+  '13:00','14:00','15:00','16:00','17:00','18:00',
+];
+
+// Status jam contoh (busy/sebagian/available) — nanti dari API
+const jamStatus: Record<string, 'penuh' | 'sebagian' | 'available'> = {
+  '07:00': 'available',
+  '08:00': 'penuh',
+  '09:00': 'penuh',
+  '10:00': 'sebagian',
+  '11:00': 'available',
+  '12:00': 'available',
+  '13:00': 'sebagian',
+  '14:00': 'available',
+  '15:00': 'available',
+  '16:00': 'penuh',
+  '17:00': 'available',
+  '18:00': 'available',
+};
+
+---
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SI MAPAN — Ruangan &amp; Jadwal</title>
+</head>
+<body>
+<div class="layout">
+
+  <Sidebar activePage="ajukan" />
+
+  <main class="main-content">
+
+    <!-- Top Header -->
+    <header class="topbar">
+      <div>
+        <h1 class="topbar-title">Ajukan Penggunaan Ruangan</h1>
+        <p class="topbar-sub">Ikuti langkah berikut</p>
+      </div>
+      <button class="notif-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <span class="notif-dot"></span>
+      </button>
+    </header>
+
+    <div class="content-wrap">
+
+      <!-- Stepper -->
+      <div class="stepper">
+        <div class="step">
+          <div class="step-circle done">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <span class="step-label">Mode</span>
+        </div>
+        <div class="step-line filled"></div>
+        <div class="step">
+          <div class="step-circle current">2</div>
+          <span class="step-label bold">Ruangan &amp; Jadwal</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+          <div class="step-circle">3</div>
+          <span class="step-label">Konfirmasi</span>
+        </div>
+      </div>
+
+      <!-- Grid: Left Panel + Right Panel -->
+      <div class="panel-grid">
+
+        <!-- ── LEFT PANEL ── -->
+        <div class="panel-left">
+          <div class="panel-head">
+            <span>🏢</span>
+            <div>
+              <p class="panel-title">Gedung &amp; Ruangan</p>
+              <p class="panel-sub">Pilih gedung lalu klik ruangan</p>
+            </div>
+          </div>
+
+          <!-- Tabs gedung -->
+          <div class="gedung-tabs">
+            {['Gedung 1','Gedung 2','Gedung 3','Outdoor'].map((g, i) => (
+              <button
+                class={`gtab${i === 0 ? ' active' : ''}`}
+                data-gedung={g}
+              >{g}</button>
+            ))}
+          </div>
+
+          <!-- Foto gedung -->
+          <div class="gedung-foto">
+            <div class="gedung-foto-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <span>Foto Gedung 1</span>
+            </div>
+          </div>
+
+          <!-- Daftar ruangan -->
+          <div class="room-list">
+            {rooms.map((r) => (
+              <button
+                class="room-item"
+                data-id={r.id}
+                data-room={JSON.stringify(r)}
+              >
+                <div class="room-info">
+                  <p class="room-name">{r.name}</p>
+                  <p class="room-meta">
+                    {r.floor}
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                      <circle cx="9" cy="7" r="4"/>
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    {r.capacity}
+                  </p>
+                </div>
+                <span class={`room-dot ${r.status}`}></span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <!-- ── RIGHT PANEL ── -->
+        <div class="panel-right">
+
+          <!-- Empty state -->
+          <div class="empty-state" id="emptyState">
+            <div class="empty-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+            </div>
+            <h3>Pilih ruangan terlebih dahulu</h3>
+            <p>Klik ruangan di panel kiri untuk melihat foto, kalender ketersediaan, dan pilih jadwal booking.</p>
+          </div>
+
+          <!-- Room detail (tersembunyi sampai ruangan dipilih) -->
+          <div class="room-detail" id="roomDetail">
+
+            <!-- Foto carousel -->
+            <div class="carousel" id="carousel">
+              <div class="carousel-track" id="carouselTrack">
+                <!-- slide foto placeholder -->
+                <div class="carousel-slide">
+                  <div class="foto-placeholder"></div>
+                </div>
+                <div class="carousel-slide">
+                  <div class="foto-placeholder"></div>
+                </div>
+                <div class="carousel-slide">
+                  <div class="foto-placeholder"></div>
+                </div>
+              </div>
+              <button class="carousel-btn prev" id="carouselPrev">‹</button>
+              <button class="carousel-btn next" id="carouselNext">›</button>
+              <div class="carousel-badge lantai" id="badgeLantai">Lantai 2</div>
+              <div class="carousel-badge kapasitas" id="badgeKapasitas">👥 200 orang</div>
+              <div class="carousel-dots" id="carouselDots"></div>
+            </div>
+
+            <!-- Info ruangan -->
+            <div class="detail-info">
+              <h2 class="detail-name" id="detailName">—</h2>
+              <p class="detail-loc" id="detailLoc">—</p>
+              <div class="fasilitas-list" id="fasilitasList"></div>
+            </div>
+
+            <!-- Pilih Tanggal & Slot Jam -->
+            <div class="jadwal-grid">
+
+              <!-- Kalender -->
+              <div class="jadwal-card">
+                <div class="jadwal-card-head">
+                  <span>📅</span>
+                  <h4>Pilih Tanggal</h4>
+                </div>
+                <div class="legend">
+                  <span class="legend-dot available"></span>Tersedia
+                  <span class="legend-dot sebagian"></span>Sebagian
+                  <span class="legend-dot penuh"></span>Penuh
+                </div>
+                <div class="cal-nav">
+                  <button class="cal-arrow" id="calPrev">←</button>
+                  <span class="cal-month" id="calMonth">April 2026</span>
+                  <button class="cal-arrow" id="calNext">→</button>
+                </div>
+                <div class="cal-grid">
+                  {['MIN','SEN','SEL','RAB','KAM','JUM','SAB'].map(d => (
+                    <div class="cal-dayname">{d}</div>
+                  ))}
+                </div>
+                <div class="cal-days" id="calDays"></div>
+              </div>
+
+              <!-- Slot jam -->
+              <div class="jadwal-card">
+                <div class="jadwal-card-head">
+                  <span>🕐</span>
+                  <h4>Pilih Slot Jam</h4>
+                </div>
+                <p class="slot-hint">Per 1 jam, bisa multi-pilih.
+                  <span class="legend-dot penuh"></span>=Penuh
+                  <span class="legend-dot sebagian"></span>=Sebagian
+                </p>
+                <div class="slot-grid" id="slotGrid">
+                  {jamSlots.map(j => (
+                    <button
+                      class={`slot-btn ${jamStatus[j] ?? 'available'}`}
+                      data-jam={j}
+                      disabled={jamStatus[j] === 'penuh'}
+                    >
+                      <span class="slot-time">{j}</span>
+                      <span class="slot-action">
+                        {jamStatus[j] === 'penuh' ? 'Penuh' : 'Pilih'}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+            </div><!-- /jadwal-grid -->
+
+            <!-- Aksi -->
+            <div class="action-row">
+              <button class="btn-back" onclick="history.back()">← Kembali</button>
+              <button class="btn-next" id="btnLanjut">Lanjut ke Konfirmasi →</button>
+            </div>
+
+          </div><!-- /room-detail -->
+        </div><!-- /panel-right -->
+      </div><!-- /panel-grid -->
+    </div><!-- /content-wrap -->
+  </main>
+</div>
+
+<script>
+  // ── Data ruangan dari data-attribute ──
+  const roomButtons = document.querySelectorAll<HTMLButtonElement>('.room-item');
+  const emptyState  = document.getElementById('emptyState')!;
+  const roomDetail  = document.getElementById('roomDetail')!;
+
+  // Carousel
+  let currentSlide = 0;
+  const track      = document.getElementById('carouselTrack')!;
+  const dots       = document.getElementById('carouselDots')!;
+  const totalSlides = 3;
+
+  function updateCarousel() {
+    track.style.transform = `translateX(-${currentSlide * 100}%)`;
+    dots.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i === currentSlide);
+    });
+  }
+
+  document.getElementById('carouselPrev')!.addEventListener('click', () => {
+    currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+    updateCarousel();
+  });
+  document.getElementById('carouselNext')!.addEventListener('click', () => {
+    currentSlide = (currentSlide + 1) % totalSlides;
+    updateCarousel();
+  });
+
+  // Build dots
+  for (let i = 0; i < totalSlides; i++) {
+    const d = document.createElement('span');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    dots.appendChild(d);
+  }
+
+  // ── Room select ──
+  roomButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      roomButtons.forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+
+      const r = JSON.parse(btn.dataset.room!);
+
+      // Isi info
+      document.getElementById('detailName')!.textContent = r.name;
+      document.getElementById('detailLoc')!.textContent  = `${r.floor} — ${r.gedung}`;
+      document.getElementById('badgeLantai')!.textContent = r.floor;
+      document.getElementById('badgeKapasitas')!.textContent = `👥 ${r.capacity} orang`;
+
+      // Fasilitas
+      const fl = document.getElementById('fasilitasList')!;
+      fl.innerHTML = r.fasilitas.map((f: string) =>
+        `<span class="fas-tag">${f}</span>`
+      ).join('');
+
+      // Reset carousel
+      currentSlide = 0;
+      updateCarousel();
+
+      // Tampilkan detail
+      emptyState.style.display  = 'none';
+      roomDetail.style.display  = 'flex';
+    });
+  });
+
+  // ── Slot jam toggle ──
+  document.querySelectorAll<HTMLButtonElement>('.slot-btn:not([disabled])').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('selected');
+      const action = btn.querySelector('.slot-action')!;
+      action.textContent = btn.classList.contains('selected') ? '✓ Dipilih' : 'Pilih';
+    });
+  });
+
+  // ── Kalender ──
+  let calYear  = 2026;
+  let calMonth = 3; // April (0-indexed)
+  const monthNames = [
+    'Januari','Februari','Maret','April','Mei','Juni',
+    'Juli','Agustus','September','Oktober','November','Desember'
+  ];
+
+  function buildCalendar() {
+    const calDays  = document.getElementById('calDays')!;
+    const calLabel = document.getElementById('calMonth')!;
+    calLabel.textContent = `${monthNames[calMonth]} ${calYear}`;
+    calDays.innerHTML = '';
+
+    const firstDay = new Date(calYear, calMonth, 1).getDay();
+    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+    // empty cells before first day
+    for (let i = 0; i < firstDay; i++) {
+      calDays.insertAdjacentHTML('beforeend', '<div class="cal-cell empty"></div>');
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const states = ['available','available','sebagian','penuh','available'];
+      const state  = states[d % states.length];
+      calDays.insertAdjacentHTML('beforeend',
+        `<button class="cal-cell ${state}" data-day="${d}">${d}</button>`
+      );
+    }
+
+    // cal cell click
+    calDays.querySelectorAll<HTMLButtonElement>('.cal-cell:not(.empty):not(.penuh)').forEach(c => {
+      c.addEventListener('click', () => {
+        calDays.querySelectorAll('.cal-cell').forEach(x => x.classList.remove('picked'));
+        c.classList.add('picked');
+      });
+    });
+  }
+
+  document.getElementById('calPrev')!.addEventListener('click', () => {
+    calMonth--;
+    if (calMonth < 0) { calMonth = 11; calYear--; }
+    buildCalendar();
+  });
+  document.getElementById('calNext')!.addEventListener('click', () => {
+    calMonth++;
+    if (calMonth > 11) { calMonth = 0; calYear++; }
+    buildCalendar();
+  });
+
+  buildCalendar();
+
+  // ── Lanjut ke Konfirmasi ──
+  document.getElementById('btnLanjut')!.addEventListener('click', () => {
+    const params  = new URLSearchParams(window.location.search);
+    const role    = params.get('role') ?? '';
+    const picked  = document.querySelector<HTMLButtonElement>('.cal-cell.picked');
+    const slots   = [...document.querySelectorAll<HTMLButtonElement>('.slot-btn.selected')]
+                      .map(b => b.dataset.jam).join(',');
+    const room    = document.querySelector<HTMLButtonElement>('.room-item.selected')?.dataset.id ?? '';
+
+    if (!room || !picked || !slots) {
+      alert('Harap pilih ruangan, tanggal, dan minimal 1 slot jam.');
+      return;
+    }
+    window.location.href =
+      `/admin/konfirmasi?role=${encodeURIComponent(role)}&room=${room}&tgl=${calYear}-${String(calMonth+1).padStart(2,'0')}-${picked.dataset.day}&jam=${slots}`;
+  });
+</script>
+
+<style>
+  /* Layout */
+  .layout       { display: flex; min-height: 100vh; }
+  .main-content { margin-left: var(--sidebar-w, 200px); flex: 1; display: flex; flex-direction: column; background: var(--page-bg, #f4f6f9); }
+
+  /* Topbar */
+  .topbar        { background: var(--topbar-bg,#fff); border-bottom: 1px solid var(--topbar-border,#e8ecf0); padding: 14px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .topbar-title  { font-size: 18px; font-weight: 800; color: #1e293b; }
+  .topbar-sub    { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+  .notif-btn     { background: none; border: none; cursor: pointer; position: relative; padding: 6px; border-radius: 8px; color: #64748b; display: flex; }
+  .notif-btn svg { width: 22px; height: 22px; }
+  .notif-dot     { position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; background: #e91e8c; border-radius: 50%; border: 2px solid #fff; }
+
+  /* Content */
+  .content-wrap  { padding: 24px 32px; flex: 1; display: flex; flex-direction: column; gap: 20px; }
+
+  /* Stepper */
+  .stepper       { display: flex; align-items: center; background: var(--card-bg,#fff); border-radius: 12px; padding: 16px 28px; box-shadow: var(--card-shadow, 0 1px 3px rgba(0,0,0,.06)); }
+  .step          { display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+  .step-circle   { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; background: #e2e8f0; color: #94a3b8; flex-shrink: 0; }
+  .step-circle.done    { background: #22c55e; color: #fff; }
+  .step-circle.done svg{ width: 14px; height: 14px; }
+  .step-circle.current { background: #0ea5e9; color: #fff; }
+  .step-label    { font-size: 13.5px; font-weight: 600; color: #94a3b8; }
+  .step-label.bold { color: #1e293b; font-weight: 800; }
+  .step-line     { flex: 1; height: 2px; background: #e2e8f0; margin: 0 12px; }
+  .step-line.filled { background: #22c55e; }
+
+  /* Panel grid */
+  .panel-grid    { display: grid; grid-template-columns: 270px 1fr; gap: 16px; flex: 1; }
+
+  /* Left panel */
+  .panel-left    { background: var(--card-bg,#fff); border-radius: 14px; box-shadow: var(--card-shadow, 0 1px 3px rgba(0,0,0,.06)); display: flex; flex-direction: column; overflow: hidden; }
+  .panel-head    { display: flex; align-items: center; gap: 10px; padding: 14px 16px 10px; border-bottom: 1px solid #f1f5f9; }
+  .panel-title   { font-size: 14px; font-weight: 800; color: #1e293b; }
+  .panel-sub     { font-size: 11px; color: #94a3b8; margin-top: 1px; }
+
+  /* Gedung tabs */
+  .gedung-tabs   { display: flex; padding: 10px 12px 0; border-bottom: 2px solid #f1f5f9; gap: 0; }
+  .gtab          { background: none; border: none; font-size: 12.5px; font-weight: 600; color: #94a3b8; padding: 6px 10px 8px; border-bottom: 2px solid transparent; margin-bottom: -2px; cursor: pointer; transition: all .15s; }
+  .gtab:hover    { color: #0ea5e9; }
+  .gtab.active   { color: #0ea5e9; border-bottom-color: #0ea5e9; font-weight: 800; }
+
+  /* Gedung foto */
+  .gedung-foto   { padding: 10px 12px; }
+  .gedung-foto-placeholder { width: 100%; height: 125px; background: linear-gradient(135deg,#e2e8f0,#cbd5e1); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #94a3b8; font-size: 12px; font-weight: 700; }
+  .gedung-foto-placeholder svg { width: 26px; height: 26px; }
+
+  /* Room list */
+  .room-list     { display: flex; flex-direction: column; padding: 8px 12px 12px; gap: 6px; overflow-y: auto; flex: 1; }
+  .room-item     { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; cursor: pointer; transition: all .15s; background: #fff; text-align: left; width: 100%; }
+  .room-item:hover   { border-color: #7dd3fc; background: #f0f9ff; }
+  .room-item.selected { border-color: #0ea5e9; background: #e0f2fe; }
+  .room-name     { font-size: 13px; font-weight: 700; color: #1e293b; }
+  .room-meta     { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #94a3b8; margin-top: 2px; }
+  .room-dot      { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .room-dot.available { background: #22c55e; }
+  .room-dot.busy      { background: #ef4444; }
+
+  /* Right panel */
+  .panel-right   { background: var(--card-bg,#fff); border-radius: 14px; box-shadow: var(--card-shadow, 0 1px 3px rgba(0,0,0,.06)); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+
+  /* Empty state */
+  .empty-state   { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; padding: 48px 40px; }
+  .empty-icon    { width: 72px; height: 72px; background: #f8fafc; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #e2e8f0; }
+  .empty-icon svg{ width: 32px; height: 32px; color: #cbd5e1; }
+  .empty-state h3 { font-size: 15px; font-weight: 800; color: #475569; }
+  .empty-state p  { font-size: 13px; color: #94a3b8; max-width: 320px; line-height: 1.6; }
+
+  /* Room detail */
+  .room-detail   { display: none; flex-direction: column; width: 100%; height: 100%; overflow-y: auto; }
+
+  /* Carousel */
+  .carousel      { position: relative; width: 100%; height: 260px; overflow: hidden; flex-shrink: 0; border-radius: 14px 14px 0 0; }
+  .carousel-track { display: flex; height: 100%; transition: transform .35s ease; }
+  .carousel-slide { min-width: 100%; height: 100%; }
+  .foto-placeholder { width: 100%; height: 100%; background: linear-gradient(135deg,#94a3b8,#64748b); }
+  .carousel-btn  { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,.85); border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,.15); transition: background .15s; z-index: 2; }
+  .carousel-btn:hover { background: #fff; }
+  .prev          { left: 12px; }
+  .next          { right: 12px; }
+  .carousel-badge { position: absolute; top: 12px; background: rgba(0,0,0,.55); color: #fff; font-size: 11.5px; font-weight: 700; padding: 4px 10px; border-radius: 20px; backdrop-filter: blur(4px); z-index: 2; }
+  .lantai        { left: 12px; }
+  .kapasitas     { right: 12px; }
+  .carousel-dots { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 2; }
+  .dot           { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.5); transition: background .2s; }
+  .dot.active    { background: #fff; }
+
+  /* Detail info */
+  .detail-info   { padding: 16px 20px 12px; border-bottom: 1px solid #f1f5f9; }
+  .detail-name   { font-size: 20px; font-weight: 800; color: #1e293b; }
+  .detail-loc    { font-size: 13px; color: #64748b; margin-top: 2px; }
+  .fasilitas-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .fas-tag       { background: #e0f2fe; color: #0369a1; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+
+  /* Jadwal grid */
+  .jadwal-grid   { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px 20px; flex: 1; }
+  .jadwal-card   { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .jadwal-card-head { display: flex; align-items: center; gap: 8px; }
+  .jadwal-card-head h4 { font-size: 13.5px; font-weight: 800; color: #1e293b; }
+
+  /* Legend */
+  .legend, .slot-hint { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: #64748b; flex-wrap: wrap; }
+  .legend-dot    { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-left: 4px; }
+  .legend-dot.available { background: #22c55e; }
+  .legend-dot.sebagian  { background: #f59e0b; }
+  .legend-dot.penuh     { background: #ef4444; }
+
+  /* Calendar nav */
+  .cal-nav       { display: flex; align-items: center; justify-content: space-between; }
+  .cal-month     { font-size: 13px; font-weight: 800; color: #1e293b; }
+  .cal-arrow     { background: none; border: 1px solid #e2e8f0; border-radius: 6px; width: 26px; height: 26px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: background .15s; }
+  .cal-arrow:hover { background: #e0f2fe; }
+
+  /* Cal grid */
+  .cal-grid      { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .cal-dayname   { font-size: 10px; font-weight: 800; color: #94a3b8; text-align: center; padding: 2px 0; }
+  .cal-days      { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .cal-cell      { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: 600; border-radius: 6px; border: none; cursor: pointer; transition: all .15s; background: none; color: #1e293b; }
+  .cal-cell.empty     { cursor: default; }
+  .cal-cell.available { background: #dcfce7; color: #166534; }
+  .cal-cell.sebagian  { background: #fef3c7; color: #92400e; }
+  .cal-cell.penuh     { background: #fee2e2; color: #991b1b; cursor: not-allowed; }
+  .cal-cell.picked    { background: #0ea5e9 !important; color: #fff !important; font-weight: 800; }
+  .cal-cell:not(.empty):not(.penuh):hover { filter: brightness(.92); }
+
+  /* Slot jam */
+  .slot-grid     { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; overflow-y: auto; max-height: 220px; }
+  .slot-btn      { display: flex; flex-direction: column; align-items: center; padding: 8px 6px; border-radius: 8px; border: 1.5px solid #e2e8f0; cursor: pointer; transition: all .15s; background: #fff; }
+  .slot-btn.available:hover { border-color: #0ea5e9; background: #e0f2fe; }
+  .slot-btn.sebagian { border-color: #fcd34d; background: #fef3c7; }
+  .slot-btn.penuh    { border-color: #fca5a5; background: #fee2e2; cursor: not-allowed; opacity: .7; }
+  .slot-btn.selected { border-color: #0ea5e9 !important; background: #0ea5e9 !important; }
+  .slot-btn.selected .slot-time,
+  .slot-btn.selected .slot-action { color: #fff !important; }
+  .slot-time     { font-size: 13px; font-weight: 800; color: #1e293b; }
+  .slot-action   { font-size: 10.5px; font-weight: 600; color: #64748b; margin-top: 1px; }
+  .slot-btn.penuh .slot-action { color: #ef4444; }
+
+  /* Action row */
+  .action-row    { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px 16px; border-top: 1px solid #f1f5f9; }
+  .btn-back      { background: none; border: 1.5px solid #e2e8f0; font-size: 13.5px; font-weight: 700; color: #64748b; padding: 9px 20px; border-radius: 8px; cursor: pointer; transition: all .15s; }
+  .btn-back:hover { background: #f8fafc; }
+  .btn-next      { background: #0ea5e9; border: none; font-size: 13.5px; font-weight: 800; color: #fff; padding: 9px 24px; border-radius: 8px; cursor: pointer; transition: background .15s; }
+  .btn-next:hover { background: #0284c7; }
+</style>
+
+</body>
+</html>

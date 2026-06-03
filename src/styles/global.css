@@ -29,6 +29,14 @@
         --resend-link:    #3b82f6;
         --shadow: 0 20px 60px rgba(0,0,0,0.25);
         --radius: 16px;
+                /* sidebar */
+        --sidebar-bg: #1e2433;
+        --sidebar-w: 200px;
+        --sidebar-text: #a8b3c8;
+        --sidebar-active-bg: #2d3650;
+        --sidebar-active-text: #ffffff;
+        --sidebar-label: #5a6680;
+        --sidebar-accent: #c0392b;
       }
 
       html, body {

@@ -104,7 +104,7 @@ import '../../styles/global.css'
     // Jalankan logika pengecekan role
     if (role === 'admin') {
       // Jika yang dipilih admin, arahkan ke halaman form username & password admin
-      window.location.href = '../admin/admin-login';
+      window.location.href = `./login/gmail?role=${role}`;
     } else if (role === 'manager') {
       // Jika manager, langsung lempar ke dashboard manager dengan query string
       window.location.href = `/dashboard?role=${role}`;
