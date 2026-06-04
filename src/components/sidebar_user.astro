@@ -1,7 +1,7 @@
      
      ---
      import '../styles/admin.css';
-    // sidebar_admin.astro
+    // sidebar_user.astro
     // Komponen sidebar SI MAPAN - tinggal di-import dan dipanggil di halaman manapun
     
     export interface Props {
@@ -65,22 +65,22 @@
 <script>
   // ── Ambil role dari URL parameter ──
   const params = new URLSearchParams(window.location.search);
-  const role = params.get('role'); // ambil nilai ?role=admin / user / dll
+  const role = params.get('role') ; // ambil nilai ?role=user / user / dll
 
   // ── Navigasi berdasarkan tombol nav ──
   document.getElementById('dashboardBtn')?.addEventListener('click', (e) => {
     e.preventDefault();
-    window.location.href = `/admin/dashboard?role=${encodeURIComponent(role)}`;
+    window.location.href = '/user/dashboard';
   });
 
   document.getElementById('ajukanBtn')?.addEventListener('click', (e) => {
     e.preventDefault();
-    window.location.href = `/admin/ajukan-ruangan?role=${encodeURIComponent(role)}`;
+    window.location.href = `/user/ajukan-ruangan`;
   });
 
   document.getElementById('riwayatBtn')?.addEventListener('click', (e) => {
     e.preventDefault();
-    window.location.href = `/admin/riwayat?role=${encodeURIComponent(role)}`;
+    window.location.href = `/user/riwayat`;
   });
 
   // ── Logout ──

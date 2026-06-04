@@ -112,7 +112,12 @@ import '../../styles/global.css'
     else if (role === 'staff') {
       // Jika staff, langsung lempar ke dashboard staff dengan query string
       window.location.href = `./login/gmail?role=${role}`;
-    } 
+    }
+    
+    else if (role === 'user') {
+      // Jika user, langsung lempar ke dashboard user dengan query string
+      window.location.href = `./login/gmail?role=${role}`;
+    }
     
     else {
       // Jika role lainnya atau belum dipilih

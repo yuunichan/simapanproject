@@ -179,7 +179,7 @@ import '../../styles/global.css';
           console.log("Nilai role sebelum pindah:", role);
           window.location.href = `/admin/dashboard?role=${encodeURIComponent(role)}`;
         } else if(role === 'user') {
-          window.location.href = '/user/dashboard';
+          window.location.href = `/user/dashboard?role=${encodeURIComponent(role)}`;
         } else if (role === 'manager') {
           window.location.href = '/manager/dashboard'; // sesuaikan dengan folder rute managermu
         } else if (role === 'staff') {
