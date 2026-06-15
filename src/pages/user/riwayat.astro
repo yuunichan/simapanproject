@@ -1,0 +1,470 @@
+---
+// src/pages/admin/riwayat.astro
+// Halaman Riwayat Pengajuan
+
+import Sidebar from '../../components/sidebar_user.astro';
+
+const riwayatData = [
+  {
+    id: 'R/012/03/2026',
+    judul: 'Rapat Koordinasi Teknis Q1 2026',
+    ruangan: 'Ruang Mawar',
+    gedung: 'Gedung 1',
+    tanggal: '15 Mar 2026',
+    waktu: '09:00–12:00',
+    status: 'menunggu',
+    pemohon: 'Andi Prasetyo',
+    jenis: 'Rapat Internal',
+    peserta: '25 Orang',
+    unit: 'Div. Teknologi Informasi',
+    tanggalFull: '15 Maret 2026',
+    waktuFull: '09:00 – 12:00 WIB',
+  },
+  {
+    id: 'R/011/03/2026',
+    judul: 'Pelatihan CPNS Gelombang 2',
+    ruangan: 'Ruang CAT 1',
+    gedung: 'Gedung 2',
+    tanggal: '10 Mar 2026',
+    waktu: '08:00–17:00',
+    status: 'disetujui',
+    pemohon: 'Andi Prasetyo',
+    jenis: 'Pelatihan',
+    peserta: '60 Orang',
+    unit: 'Div. Pengembangan SDM',
+    tanggalFull: '10 Maret 2026',
+    waktuFull: '08:00 – 17:00 WIB',
+  },
+  {
+    id: 'R/010/02/2026',
+    judul: 'Seminar Nasional Kepegawaian 2026',
+    ruangan: 'Ruang Aula',
+    gedung: 'Gedung 1',
+    tanggal: '28 Feb 2026',
+    waktu: '09:00–16:00',
+    status: 'ditolak',
+    pemohon: 'Andi Prasetyo',
+    jenis: 'Seminar',
+    peserta: '150 Orang',
+    unit: 'Div. Kepegawaian',
+    tanggalFull: '28 Februari 2026',
+    waktuFull: '09:00 – 16:00 WIB',
+  },
+];
+---
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SI MAPAN — Riwayat Pengajuan</title>
+</head>
+<body>
+<div class="layout">
+
+  <Sidebar activePage="riwayat" />
+
+  <main class="main-content">
+
+    <!-- Top Header -->
+    <header class="topbar">
+      <div>
+        <h1 class="topbar-title">Riwayat Pengajuan</h1>
+        <p class="topbar-sub">Daftar semua pengajuan Anda</p>
+      </div>
+      <button class="notif-btn" aria-label="Notifikasi">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <span class="notif-dot"></span>
+      </button>
+    </header>
+
+    <div class="content-wrap">
+
+      <!-- List riwayat -->
+      <div class="riwayat-list">
+        {riwayatData.map((item) => (
+          <div class="riwayat-item">
+            <div class="riwayat-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10 9 9 9 8 9"/>
+              </svg>
+            </div>
+
+            <div class="riwayat-info">
+              <p class="riwayat-judul">{item.judul}</p>
+              <p class="riwayat-meta">
+                {item.ruangan}, {item.gedung} · {item.tanggal} · {item.waktu}
+              </p>
+              <p class="riwayat-id">{item.id}</p>
+            </div>
+
+            <div class="riwayat-actions">
+              <span class={`status-badge ${item.status}`}>
+                {item.status === 'menunggu' ? 'Menunggu' :
+                 item.status === 'disetujui' ? 'Disetujui' : 'Ditolak'}
+              </span>
+
+              {item.status !== 'ditolak' ? (
+                <button
+                  class="btn-tiket"
+                  data-item={JSON.stringify(item)}
+                >Tiket</button>
+              ) : (
+                <button
+                  class="btn-detail"
+                  data-item={JSON.stringify(item)}
+                >Detail</button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ── POPUP TIKET ── -->
+<div class="overlay" id="overlay" aria-hidden="true">
+  <div class="popup" id="popup" role="dialog" aria-modal="true">
+
+    <!-- Header biru -->
+    <div class="popup-header">
+      <div class="popup-brand">
+        <div class="brand-logo">
+          <svg viewBox="0 0 40 40" fill="none">
+            <rect width="40" height="40" rx="8" fill="#fff"/>
+            <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle"
+              font-size="14" font-weight="900" fill="#e91e8c">SI</text>
+          </svg>
+        </div>
+        <div>
+          <p class="brand-name">SiMAPAN</p>
+          <p class="brand-sub">Badan Kepegawaian Negara RI</p>
+        </div>
+      </div>
+      <div class="popup-ticket-meta">
+        <div class="meta-col">
+          <span class="meta-label">No. Tiket</span>
+          <span class="meta-val" id="tikId">—</span>
+        </div>
+        <div class="meta-col right">
+          <span class="meta-label">Pemohon</span>
+          <span class="meta-val" id="tikPemohon">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Body detail -->
+    <div class="popup-body">
+      <div class="tik-row">
+        <span class="tik-label">GEDUNG</span>
+        <span class="tik-val" id="tikGedung">—</span>
+      </div>
+      <div class="tik-row">
+        <span class="tik-label">RUANGAN</span>
+        <span class="tik-val" id="tikRuangan">—</span>
+      </div>
+      <div class="tik-row">
+        <span class="tik-label">JENIS KEGIATAN</span>
+        <span class="tik-val" id="tikJenis">—</span>
+      </div>
+      <div class="tik-row">
+        <span class="tik-label">TANGGAL</span>
+        <span class="tik-val" id="tikTanggal">—</span>
+      </div>
+      <div class="tik-row">
+        <span class="tik-label">WAKTU</span>
+        <span class="tik-val" id="tikWaktu">—</span>
+      </div>
+      <div class="tik-row">
+        <span class="tik-label">PESERTA</span>
+        <span class="tik-val" id="tikPeserta">—</span>
+      </div>
+      <div class="tik-row">
+        <span class="tik-label">UNIT KERJA</span>
+        <span class="tik-val" id="tikUnit">—</span>
+      </div>
+
+      <!-- Status badge center -->
+      <div class="tik-status-wrap">
+        <span class="tik-status-badge" id="tikStatusBadge">—</span>
+      </div>
+    </div>
+
+    <!-- Footer gelap -->
+    <div class="popup-footer">
+      <div class="footer-brand">
+        <p class="footer-name">SI MAPAN — BKN RI</p>
+        <p class="footer-sub">Sistem ruMah tangga dan kearsiPAN</p>
+      </div>
+      <div class="barcode">
+        {[4,6,3,7,5,8,4,6,3,5,7,4,6].map((h) => (
+          <div class="bar" style={`height:${h * 4}px`}></div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="popup-actions">
+      <button class="btn-cetak" id="btnCetak">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+          <polyline points="6 9 6 2 18 2 18 9"/>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+          <rect x="6" y="14" width="12" height="8"/>
+        </svg>
+        Cetak Tiket
+      </button>
+      <button class="btn-unduh" id="btnUnduh">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Unduh Tiket
+      </button>
+      <button class="btn-close" id="btnClose" aria-label="Tutup">✕</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const overlay = document.getElementById('overlay')!;
+  const popup   = document.getElementById('popup')!;
+
+  function set(id: string, val: string) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+
+  function openPopup(item: any) {
+    set('tikId',       item.id);
+    set('tikPemohon',  item.pemohon);
+    set('tikGedung',   item.gedung);
+    set('tikRuangan',  item.ruangan);
+    set('tikJenis',    item.jenis);
+    set('tikTanggal',  item.tanggalFull);
+    set('tikWaktu',    item.waktuFull);
+    set('tikPeserta',  item.peserta);
+    set('tikUnit',     item.unit);
+
+    // Status badge
+    const badge = document.getElementById('tikStatusBadge')!;
+    badge.className = 'tik-status-badge';
+    if (item.status === 'menunggu') {
+      badge.textContent = '⏳ Menunggu Persetujuan';
+      badge.classList.add('menunggu');
+    } else if (item.status === 'disetujui') {
+      badge.textContent = '✓ Disetujui';
+      badge.classList.add('disetujui');
+    } else {
+      badge.textContent = '✕ Ditolak';
+      badge.classList.add('ditolak');
+    }
+
+    overlay.classList.add('visible');
+    popup.classList.add('visible');
+    overlay.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePopup() {
+    overlay.classList.remove('visible');
+    popup.classList.remove('visible');
+    overlay.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  // Bind tiket & detail buttons
+  document.querySelectorAll<HTMLButtonElement>('.btn-tiket, .btn-detail').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = JSON.parse(btn.dataset.item!);
+      openPopup(item);
+    });
+  });
+
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closePopup(); });
+  document.getElementById('btnClose')!.addEventListener('click', closePopup);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePopup(); });
+
+  document.getElementById('btnCetak')!.addEventListener('click', () => window.print());
+  document.getElementById('btnUnduh')!.addEventListener('click', () => {
+    alert('Fitur unduh tiket akan segera tersedia.');
+  });
+</script>
+
+<style>
+  /* ── Layout ── */
+  .layout       { display: flex; min-height: 100vh; }
+  .main-content { margin-left: var(--sidebar-w, 200px); flex: 1; display: flex; flex-direction: column; background: var(--page-bg, #f4f6f9); }
+
+  /* ── Topbar ── */
+  .topbar       { background: #fff; border-bottom: 1px solid #e8ecf0; padding: 14px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .topbar-title { font-size: 18px; font-weight: 800; color: #1e293b; }
+  .topbar-sub   { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+  .notif-btn    { background: none; border: none; cursor: pointer; position: relative; padding: 6px; border-radius: 8px; color: #64748b; display: flex; }
+  .notif-btn svg{ width: 22px; height: 22px; }
+  .notif-dot    { position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; background: #e91e8c; border-radius: 50%; border: 2px solid #fff; }
+
+  /* ── Content ── */
+  .content-wrap { padding: 24px 32px; flex: 1; display: flex; flex-direction: column; gap: 12px; }
+
+  /* ── Riwayat list ── */
+  .riwayat-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .riwayat-item {
+    display: flex; align-items: center; gap: 16px;
+    background: #fff; border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    transition: box-shadow .15s;
+  }
+  .riwayat-item:hover { box-shadow: 0 3px 10px rgba(0,0,0,.09); }
+
+  .riwayat-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: #e0f2fe; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .riwayat-icon svg { width: 20px; height: 20px; color: #0ea5e9; }
+
+  .riwayat-info { flex: 1; min-width: 0; }
+  .riwayat-judul { font-size: 14px; font-weight: 800; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .riwayat-meta  { font-size: 12px; color: #64748b; margin-top: 2px; }
+  .riwayat-id    { font-size: 12px; color: #0ea5e9; font-weight: 700; margin-top: 3px; }
+
+  .riwayat-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+  /* Status badges */
+  .status-badge { font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
+  .status-badge.menunggu  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+  .status-badge.disetujui { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+  .status-badge.ditolak   { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+
+  .btn-tiket, .btn-detail {
+    font-size: 12.5px; font-weight: 700; padding: 5px 16px;
+    border-radius: 7px; cursor: pointer; transition: all .15s;
+  }
+  .btn-tiket  { background: #fff; border: 1.5px solid #0ea5e9; color: #0ea5e9; }
+  .btn-tiket:hover  { background: #e0f2fe; }
+  .btn-detail { background: #fff; border: 1.5px solid #ef4444; color: #ef4444; }
+  .btn-detail:hover { background: #fee2e2; }
+
+  /* ── Overlay ── */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(15,23,42,.5);
+    backdrop-filter: blur(3px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100; opacity: 0; pointer-events: none;
+    transition: opacity .25s ease;
+  }
+  .overlay.visible { opacity: 1; pointer-events: auto; }
+
+  /* ── Popup ── */
+  .popup {
+    width: 100%; max-width: 480px;
+    border-radius: 16px; overflow: hidden;
+    box-shadow: 0 24px 64px rgba(0,0,0,.22);
+    transform: scale(.93) translateY(14px);
+    opacity: 0;
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .25s ease;
+  }
+  .popup.visible { transform: scale(1) translateY(0); opacity: 1; }
+
+  /* Header biru */
+  .popup-header {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    padding: 20px 24px 16px;
+  }
+  .popup-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .brand-logo  {
+    width: 44px; height: 44px; border-radius: 10px;
+    background: rgba(255,255,255,.2); display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; overflow: hidden;
+  }
+  .brand-logo svg { width: 44px; height: 44px; }
+  .brand-name { font-size: 17px; font-weight: 900; color: #fff; letter-spacing: .01em; }
+  .brand-sub  { font-size: 11.5px; color: rgba(255,255,255,.75); margin-top: 1px; }
+
+  .popup-ticket-meta {
+    display: flex; justify-content: space-between;
+    background: rgba(255,255,255,.15); border-radius: 10px;
+    padding: 12px 16px; backdrop-filter: blur(4px);
+  }
+  .meta-col { display: flex; flex-direction: column; gap: 2px; }
+  .meta-col.right { text-align: right; }
+  .meta-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,.65); text-transform: uppercase; letter-spacing: .06em; }
+  .meta-val   { font-size: 15px; font-weight: 900; color: #fff; letter-spacing: .02em; }
+
+  /* Body */
+  .popup-body { background: #fff; padding: 4px 24px 12px; }
+
+  .tik-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 10px 0; border-bottom: 1px solid #f1f5f9;
+  }
+  .tik-row:last-of-type { border-bottom: none; }
+  .tik-label { font-size: 10.5px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: .06em; }
+  .tik-val   { font-size: 13.5px; font-weight: 600; color: #1e293b; text-align: right; }
+
+  .tik-status-wrap { display: flex; justify-content: center; padding: 12px 0 4px; }
+  .tik-status-badge {
+    font-size: 13px; font-weight: 800; padding: 7px 20px;
+    border-radius: 20px; letter-spacing: .01em;
+  }
+  .tik-status-badge.menunggu  { background: #fef3c7; color: #92400e; border: 1.5px solid #fde68a; }
+  .tik-status-badge.disetujui { background: #dcfce7; color: #166534; border: 1.5px solid #86efac; }
+  .tik-status-badge.ditolak   { background: #fee2e2; color: #991b1b; border: 1.5px solid #fca5a5; }
+
+  /* Footer gelap */
+  .popup-footer {
+    background: #0f172a; padding: 14px 24px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-brand { }
+  .footer-name { font-size: 12px; font-weight: 800; color: #e2e8f0; }
+  .footer-sub  { font-size: 10px; color: #64748b; margin-top: 2px; }
+
+  /* Barcode visual */
+  .barcode { display: flex; align-items: flex-end; gap: 2px; }
+  .bar { width: 3px; background: #334155; border-radius: 1px; }
+  .bar:nth-child(2n) { background: #475569; }
+  .bar:nth-child(3n) { background: #64748b; }
+
+  /* Popup actions */
+  .popup-actions {
+    background: #fff; display: flex; gap: 0;
+    border-top: 1px solid #f1f5f9;
+  }
+  .btn-cetak, .btn-unduh {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 14px; font-size: 13.5px; font-weight: 700;
+    border: none; cursor: pointer; transition: background .15s;
+  }
+  .btn-cetak { background: #0ea5e9; color: #fff; }
+  .btn-cetak:hover { background: #0284c7; }
+  .btn-unduh { background: #f8fafc; color: #475569; border-left: 1px solid #e2e8f0; }
+  .btn-unduh:hover { background: #f1f5f9; }
+  .btn-close {
+    width: 52px; flex-shrink: 0; background: #f1f5f9; border: none;
+    border-left: 1px solid #e2e8f0; font-size: 16px; color: #94a3b8;
+    cursor: pointer; transition: all .15s; display: flex; align-items: center; justify-content: center;
+  }
+  .btn-close:hover { background: #fee2e2; color: #ef4444; }
+</style>
+
+</body>
+</html>

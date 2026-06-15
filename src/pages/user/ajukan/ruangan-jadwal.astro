@@ -455,7 +455,7 @@ const jamStatus: Record<string, 'penuh' | 'sebagian' | 'available'> = {
       return;
     }
     window.location.href =
-      `/admin/konfirmasi?role=${encodeURIComponent(role)}&room=${room}&tgl=${calYear}-${String(calMonth+1).padStart(2,'0')}-${picked.dataset.day}&jam=${slots}`;
+      `/user/ajukan/konfirmasi?role=${encodeURIComponent(role)}&room=${room}&tgl=${calYear}-${String(calMonth+1).padStart(2,'0')}-${picked.dataset.day}&jam=${slots}`;
   });
 </script>
 

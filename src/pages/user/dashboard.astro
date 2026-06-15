@@ -140,6 +140,11 @@ import Sidebar from '../../components/sidebar_user.astro';
           // TODO: handle tiket/detail actions
         });
       });
+
+      document.querySelector(".btn-ajukan")?.addEventListener("click", function (e) {
+          e.preventDefault();
+          window.location.href = "/user/ajukan-ruangan";
+      });
     </script>
   </body>
 </html>
