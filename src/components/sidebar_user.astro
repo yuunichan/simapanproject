@@ -1,90 +1,109 @@
-     
-     ---
-     import '../styles/admin.css';
-    // sidebar_user.astro
-    // Komponen sidebar SI MAPAN - tinggal di-import dan dipanggil di halaman manapun
-    
-    export interface Props {
-    activePage?: 'beranda' | 'ajukan' | 'riwayat';
-    }
-    
-    const { activePage = 'beranda' } = Astro.props;
-    ---
-     <!-- ── Sidebar ── -->
-      <aside class="sidebar">
-        <div class="sidebar-logo">
-          <div class="logo-img">
-            <img src="../../../src/assets/BKN.png" alt="SI MAPAN Logo" />
-          </div>
-          <div class="logo-brand">
-            <img
-              class="logo-brand-img"
-              src="../../../src/assets/simapan.png"
-              alt="Sistem Informasi Manajemen Aset dan Ruangan"
-            />
-            <p class="logo-brand-text">Admin - BKN Pusat</p>
-          </div>
-        </div>
-        
+---
+import simapanLogo from "../assets/Logo_simapan.png";
 
-        <nav class="nav-section">
-          <p class="nav-section-label">Penggunaan Ruangan</p>
+const {
+  activePage = "beranda",
+  totalPengajuan = 0,
+  totalSetuju = 0,
+  totalTunggu = 0,
+} = Astro.props;
+---
 
-          <a href="#" class={`nav-item ${activePage === 'beranda' ? 'active' : ''}`} id="dashboardBtn">
-            <!-- home icon -->
-            <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h4a1 1 0 001-1v-3h2v3a1 1 0 001 1h4a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
-            Beranda
-          </a>
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <img
+      class="logo-brand-img"
+      src={simapanLogo.src}
+      alt="Sistem Informasi Manajemen Aset dan Ruangan"
+    />
+  </div>
 
-          <a class={`nav-item ${activePage === 'ajukan' ? 'active' : ''}`} id="ajukanBtn">            
-            <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/></svg>
-            Ajukan Penggunaan
-          </a>
+  <nav class="nav-section">
+    <p class="nav-section-label">Penggunaan Ruangan</p>
 
-          <a href="#"class={`nav-item ${activePage === 'riwayat' ? 'active' : ''}`} id="riwayatBtn">
-            <!-- document icon -->
-            <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/></svg>
-            Riwayat Pengajuan
-          </a>
-        </nav>
+    <!-- Beranda -->
+    <a
+      href="/user/dashboard"
+      class={`nav-item ${activePage === "beranda" ? "active" : ""}`}
+      id="dashboardBtn"
+    >
+      <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor">
+        <path
+          d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h4a1 1 0 001-1v-3h2v3a1 1 0 001 1h4a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"
+        ></path>
+      </svg>
+      Beranda
+    </a>
 
-        <div class="sidebar-footer">
-          <div class="avatar">AP</div>
-          <div class="user-info">
-            <p class="user-name">Andi Prasetyo</p>
-            <p class="user-role">Karyawan</p>
-          </div>
-          <button class="logout-btn" title="Keluar">
-            <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/>
-            </svg>
-          </button>
-        </div>
-      </aside>
+    <!-- Ajukan -->
+    <a
+      href="/user/ajukan-ruangan"
+      class={`nav-item ${activePage === "ajukan" ? "active" : ""}`}
+      id="ajukanBtn"
+    >
+      <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor">
+        <path
+          fill-rule="evenodd"
+          d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+          clip-rule="evenodd"></path>
+      </svg>
+      Ajukan Penggunaan
+    </a>
 
-<script>
-  // ── Ambil role dari URL parameter ──
-  const params = new URLSearchParams(window.location.search);
-  const role = params.get('role') ; // ambil nilai ?role=user / user / dll
+    <!-- Riwayat -->
+    <a
+      href="/user/riwayat"
+      class={`nav-item ${activePage === "riwayat" ? "active" : ""}`}
+      id="riwayatBtn"
+    >
+      <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor">
+        <path
+          fill-rule="evenodd"
+          d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
+          clip-rule="evenodd"></path>
+      </svg>
+      Riwayat Pengajuan
+    </a>
+  </nav>
 
-  // ── Navigasi berdasarkan tombol nav ──
-  document.getElementById('dashboardBtn')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    window.location.href = '/user/dashboard';
-  });
+  <!-- ── Aktivitas Anda ── -->
+  <div class="sidebar-activity">
+    <p class="sidebar-activity-label">Aktivitas Anda</p>
+    <div class="sidebar-activity-stats">
+      <div class="sidebar-activity-item">
+        <p class="sidebar-activity-number sidebar-activity-total">
+          {totalPengajuan}
+        </p>
+        <p class="sidebar-activity-text">Total</p>
+      </div>
+      <div class="sidebar-activity-item">
+        <p class="sidebar-activity-number sidebar-activity-setuju">
+          {totalSetuju}
+        </p>
+        <p class="sidebar-activity-text">Setuju</p>
+      </div>
+      <div class="sidebar-activity-item">
+        <p class="sidebar-activity-number sidebar-activity-tunggu">
+          {totalTunggu}
+        </p>
+        <p class="sidebar-activity-text">Tunggu</p>
+      </div>
+    </div>
+  </div>
 
-  document.getElementById('ajukanBtn')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    window.location.href = `/user/ajukan-ruangan`;
-  });
-
-  document.getElementById('riwayatBtn')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    window.location.href = `/user/riwayat`;
-  });
-
-  // ── Logout ──
-  document.querySelector('.logout-btn')?.addEventListener('click', () => {
-    window.location.href = '/login';
-  });
-</script>
+  <div class="sidebar-footer">
+    <div class="avatar">AP</div>
+    <div class="user-info">
+      <p class="user-name">Andi Prasetyo</p>
+      <p class="user-role">Karyawan</p>
+    </div>
+    <button class="logout-btn" title="Keluar">
+      <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor">
+        <path
+          fill-rule="evenodd"
+          d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
+          clip-rule="evenodd"></path>
+      </svg>
+    </button>
+  </div>
+</aside>

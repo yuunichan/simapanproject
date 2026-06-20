@@ -1,10 +1,10 @@
 ---
 // SI MAPAN - Dashboard Beranda
 // Penggunaan Ruangan — User View
-import Sidebar from '../../components/sidebar_user.astro';
+import Sidebar from "../../components/sidebar_user.astro";
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
@@ -12,28 +12,36 @@ import Sidebar from '../../components/sidebar_user.astro';
     <title>SI MAPAN — Beranda</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display&display=swap" rel="stylesheet" />  
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="../../../src/styles/admin.css" />
   </head>
 
   <body>
     <div class="layout">
-
       <!-- Sidebar -->
-    <Sidebar activePage="beranda" />
+      <Sidebar activePage="beranda" />
       <!-- ── Main ── -->
       <div class="main">
-
         <!-- Topbar -->
         <header class="topbar">
           <div class="topbar-title">
-            <h1>Beranda</h1>
-            <p>Selamat datang di SI MAPAN</p>
+            <h1>Ajukan Penggunaan Ruangan</h1>
+            <p>Ikuti langkah berikut</p>
           </div>
           <div class="topbar-actions">
             <button class="notif-btn" title="Notifikasi">
-              <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zm0 16a2 2 0 01-2-2h4a2 2 0 01-2 2z"/>
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zm0 16a2 2 0 01-2-2h4a2 2 0 01-2 2z"
+                ></path>
               </svg>
               <span class="notif-dot"></span>
             </button>
@@ -42,32 +50,77 @@ import Sidebar from '../../components/sidebar_user.astro';
 
         <!-- Page content -->
         <main class="content">
-
           <!-- Hero -->
           <div class="hero">
             <div class="hero-text">
               <p class="hero-greeting">Selamat datang,</p>
               <h2 class="hero-name">Andi Prasetyo</h2>
-              <p class="hero-division">Divisi Teknologi Informasi</p>
+              <p class="hero-division">Divisi Teknologi Informasi | BKN RI</p>
+              <p class="tanggal-item" id="tanggal_display">Memuat tanggal...</p>
             </div>
-            <button class="btn-ajukan" id="ajukanBtn">+ Ajukan Ruangan</button>
+            <div class="button-test">
+              <button class="btn-ajukan" id="ajukanBtn">+ Ajukan Ruangan</button
+              >
+              <p class="maks">Maks. H-1 sebelum kegiatan</p>
+            </div>
           </div>
 
           <!-- Stats -->
+          <!-- Stats -->
           <div class="stats-row">
+            <div class="stat-card blue">
+              <p class="stat-label">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M3 4a1 1 0 011-1h12a1 1 0 011 1v1H3V4zm0 3h14v9a1 1 0 01-1 1H4a1 1 0 01-1-1V7zm3 2a1 1 0 100 2h2a1 1 0 100-2H6z"
+                  ></path>
+                </svg>
+                Total Pengajuan
+              </p>
+              <p class="stat-value">9</p>
+              <p class="stat-sub">Sepanjang 2026</p>
+            </div>
+
             <div class="stat-card green">
-              <p class="stat-label">Disetujui</p>
-              <p class="stat-value">1</p>
+              <p class="stat-label">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.704 5.29a1 1 0 010 1.42l-7.01 7.02a1 1 0 01-1.42 0L3.296 8.75a1 1 0 111.42-1.42l4.27 4.28 6.3-6.32a1 1 0 011.42 0z"
+                    clip-rule="evenodd"></path>
+                </svg>
+                Disetujui
+              </p>
+              <p class="stat-value">10</p>
               <p class="stat-sub">75% approval rate</p>
             </div>
-            <div class="stat-card green2">
-              <p class="stat-label">Disetujui</p>
-              <p class="stat-value">1</p>
-              <p class="stat-sub">75% approval rate</p>
-            </div>
+
             <div class="stat-card yellow">
-              <p class="stat-label">Menunggu</p>
-              <p class="stat-value">1</p>
+              <p class="stat-label">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                    clip-rule="evenodd"></path>
+                </svg>
+                Menunggu
+              </p>
+              <p class="stat-value">10</p>
               <p class="stat-sub">Perlu tindakan</p>
             </div>
           </div>
@@ -75,7 +128,10 @@ import Sidebar from '../../components/sidebar_user.astro';
           <!-- Recent submissions table -->
           <div class="table-card">
             <div class="table-header">
-              <span class="table-title">Pengajuan Terbaru</span>
+              <span class="table-title">
+                <span class="table-title-bar"></span>
+                Pengajuan Terbaru
+              </span>
               <a href="#" class="lihat-semua">Lihat Semua →</a>
             </div>
             <table>
@@ -113,38 +169,59 @@ import Sidebar from '../../components/sidebar_user.astro';
               </tbody>
             </table>
           </div>
-
         </main>
       </div>
     </div>
 
     <script>
       // Active nav highlight
-      document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', (e) => {
-          e.preventDefault();
-          document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-          (item as HTMLElement).classList.add('active');
+      document.querySelectorAll(".nav-item").forEach((item) => {
+        item.addEventListener("click", (e) => {          
+          document
+            .querySelectorAll(".nav-item")
+            .forEach((i) => i.classList.remove("active"));
+          (item as HTMLElement).classList.add("active");
         });
       });
 
-
-
       // Action buttons
-      document.querySelectorAll('.btn-action').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const row = (btn as HTMLElement).closest('tr');
-          const ticket = row?.querySelector('.ticket-link')?.textContent;
+      document.querySelectorAll(".btn-action").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const row = (btn as HTMLElement).closest("tr");
+          const ticket = row?.querySelector(".ticket-link")?.textContent;
           const action = (btn as HTMLElement).textContent?.trim();
           console.log(`${action} for ticket: ${ticket}`);
           // TODO: handle tiket/detail actions
         });
-      });
+      });      
 
-      document.querySelector(".btn-ajukan")?.addEventListener("click", function (e) {
-          e.preventDefault();
-          window.location.href = "/user/ajukan-ruangan";
-      });
+      function tampilkanTanggal() {
+        const hariIni = new Date();
+
+        const opsi = {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        };
+
+        // Menggunakan 'as Intl.DateTimeFormatOptions' untuk mengatasi error overload pada TypeScript
+        const tanggalString = hariIni.toLocaleDateString(
+          "id-ID",
+          opsi as Intl.DateTimeFormatOptions,
+        );
+
+        // Mencari elemen dengan ID 'tanggal_display'
+        const elemenTanggal = document.getElementById("tanggal_display");
+
+        // Memastikan elemen ditemukan sebelum mengubah textContent
+        if (elemenTanggal) {
+          elemenTanggal.textContent = tanggalString;
+        }
+      }
+
+      // Menjalankan fungsi saat halaman dimuat
+      tampilkanTanggal();
     </script>
   </body>
 </html>
