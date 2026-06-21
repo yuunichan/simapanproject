@@ -1,0 +1,196 @@
+---
+// dashboard.astro — Halaman "Persetujuan Pengajuan" (Super Admin)
+
+interface Pengajuan {
+  noTiket: string;
+  pemohon: string;
+  unitKerja: string;
+  ruangan: string;
+  lokasi: string;
+  tanggal: string;
+  jam: string;
+  tipe: string;
+  status: "menunggu" | "disetujui" | "ditolak";
+}
+
+const daftarPersetujuan: Pengajuan[] = [
+  {
+    noTiket: "R/013/03/2026",
+    pemohon: "Siti Rahayu",
+    unitKerja: "Biro Hukum",
+    ruangan: "Ruang Mawar",
+    lokasi: "Gedung 1",
+    tanggal: "16 Mar 2026",
+    jam: "10:00–12:00",
+    tipe: "Full Offline",
+    status: "menunggu",
+  },
+  {
+    noTiket: "R/012/03/2026",
+    pemohon: "Andi Prasetyo",
+    unitKerja: "Biro SDMO",
+    ruangan: "Ruang Mawar",
+    lokasi: "Gedung 1",
+    tanggal: "15 Mar 2026",
+    jam: "09:00–12:00",
+    tipe: "Rapat Internal",
+    status: "menunggu",
+  },
+  {
+    noTiket: "R/011/03/2026",
+    pemohon: "Andi Prasetyo",
+    unitKerja: "Puspenkom",
+    ruangan: "Ruang CAT 1",
+    lokasi: "Gedung 2",
+    tanggal: "10 Mar 2026",
+    jam: "08:00–Selesai",
+    tipe: "Pelatihan",
+    status: "disetujui",
+  },
+  {
+    noTiket: "R/010/02/2026",
+    pemohon: "Andi Prasetyo",
+    unitKerja: "Biro Renma",
+    ruangan: "Ruang Aula",
+    lokasi: "Gedung 1",
+    tanggal: "28 Feb 2026",
+    jam: "09:00–16:00",
+    tipe: "Seminar",
+    status: "ditolak",
+  },
+];
+
+const badgeMap: Record<Pengajuan["status"], { class: string; label: string }> = {
+  menunggu: { class: "badge-menunggu", label: "Menunggu" },
+  disetujui: { class: "badge-disetujui", label: "Disetujui" },
+  ditolak: { class: "badge-ditolak", label: "Ditolak" },
+};
+
+const activePage = "persetujuan";
+
+import SidebarSuperAdmin from "../../components/sidebarsuperadmin.astro";
+---
+
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Persetujuan Pengajuan — SI MAPAN</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../../src/styles/admin.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <!-- ───────────── SIDEBAR ───────────── -->
+      <SidebarSuperAdmin activePage="persetujuan" />  
+
+      <!-- ───────────── MAIN ───────────── -->
+      <div class="main">
+        <header class="topbar">
+          <div class="topbar-title">
+            <h1>Persetujuan Pengajuan</h1>
+            <p>Kelola persetujuan ruangan</p>
+          </div>
+          <div class="topbar-actions">
+            <button class="notif-btn" title="Notifikasi">
+              <svg viewBox="0 0 20 20" fill="currentColor">
+                <path
+                  d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM8.5 16a1.5 1.5 0 003 0h-3z"
+                ></path>
+              </svg>
+              <span class="notif-dot"></span>
+            </button>
+          </div>
+        </header>
+
+        <main class="content">
+          <div class="table-card">
+            <div class="table-header">
+              <div class="table-title">
+                Daftar Persetujuan
+              </div>
+            </div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>No. Tiket</th>
+                  <th>Pemohon</th>
+                  <th>Unit Kerja</th>
+                  <th>Ruangan</th>
+                  <th>Lokasi</th>
+                  <th>Tanggal</th>
+                  <th>Jam</th>
+                  <th>Tipe</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  daftarPersetujuan.map((item) => {
+                    const badge = badgeMap[item.status];
+                    return (
+                      <tr>
+                        <td>
+                          <a href={`/admin/persetujuan/${item.noTiket}`} class="ticket-link">
+                            {item.noTiket}
+                          </a>
+                        </td>
+                        <td>{item.pemohon}</td>
+                        <td>{item.unitKerja}</td>
+                        <td>{item.ruangan}</td>
+                        <td>{item.lokasi}</td>
+                        <td class="td-date">{item.tanggal}</td>
+                        <td>{item.jam}</td>
+                        <td>{item.tipe}</td>
+                        <td>
+                          <span class={`badge ${badge.class}`}>{badge.label}</span>
+                        </td>
+                        <td>
+                          {item.status === "menunggu" && (
+                            <div style="display:flex; gap:8px;">
+                              <button class="btn-action btn-approve">Setuju</button>
+                              <button class="btn-action btn-reject">Tolak</button>
+                            </div>
+                          )}
+                          {item.status === "disetujui" && (
+                            <button class="btn-action">Lihat</button>
+                          )}
+                          {item.status === "ditolak" && (
+                            <button class="btn-action">Detail</button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })
+                }
+              </tbody>
+            </table>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <style>
+      /* Variasi warna tombol aksi khusus status Menunggu */
+      .btn-approve {
+        border-color: #16a34a;
+        color: #16a34a;
+      }
+      .btn-approve:hover {
+        background: #f0fdf4;
+      }
+      .btn-reject {
+        border-color: #ef4444;
+        color: #ef4444;
+      }
+      .btn-reject:hover {
+        background: #fef2f2;
+      }
+    </style>
+  </body>
+</html>

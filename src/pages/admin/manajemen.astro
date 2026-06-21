@@ -1,0 +1,153 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import SidebarAdmin from "../../components/sidebaradmin.astro";
+
+const daftarUser = [
+    {
+        nama: "Andi Prasetyo",
+        email: "andi.prasetyo@bkn.go.id",
+        unitKerja: "Biro SDMO",
+        role: "user",
+        status: "aktif",
+    },
+    {
+        nama: "Siti Rahayu",
+        email: "siti.rahayu@bkn.go.id",
+        unitKerja: "Puspenkom",
+        role: "user",
+        status: "aktif",
+    },
+    {
+        nama: "Budi Santoso",
+        email: "budi.santoso@bkn.go.id",
+        unitKerja: "Biro Renma",
+        role: "admin",
+        status: "aktif",
+    },
+];
+
+const roleLabel = { user: "User", admin: "Admin" };
+const statusLabel = { aktif: "Aktif", nonaktif: "Nonaktif" };
+---
+
+<Layout title="Manajemen User — SI MAPAN">
+    <div class="layout">
+        <SidebarAdmin activePage="manajemenuser" />
+
+        <div class="main">
+            <header class="topbar">
+                <div class="topbar-title">
+                    <h1>Manajemen User</h1>
+                    <p>Kelola akun pengguna</p>
+                </div>
+                <div class="topbar-actions">
+                    <button class="notif-btn" title="Notifikasi">
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path
+                                d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM8.5 16a1.5 1.5 0 003 0h-3z"
+                            ></path>
+                        </svg>
+                        <span class="notif-dot"></span>
+                    </button>
+                </div>
+            </header>
+
+            <main class="content">
+                <section class="table-card">
+                    <div class="table-header">
+                        <div class="table-title">
+                            <span class="table-title-bar"></span>
+                            Manajemen User
+                        </div>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nama</th>
+                                <th>Email</th>
+                                <th>Unit Kerja</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                daftarUser.map((item) => (
+                                    <tr>
+                                        <td>{item.nama}</td>
+                                        <td>
+                                            <a href={`mailto:${item.email}`} class="email-link">
+                                                {item.email}
+                                            </a>
+                                        </td>
+                                        <td>{item.unitKerja}</td>
+                                        <td>
+                                            <span class={`badge-role badge-role-${item.role}`}>
+                                                {roleLabel[item.role]}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class={`badge-status badge-status-${item.status}`}>
+                                                {statusLabel[item.status]}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button class="btn-action">Edit</button>
+                                        </td>
+                                    </tr>
+                                ))
+                            }
+                        </tbody>
+                    </table>
+                </section>
+            </main>
+        </div>
+    </div>
+</Layout>
+
+<style>
+    /* Tambahan baru untuk link email serta badge role/status, tidak mengubah CSS yang sudah ada */
+    .email-link {
+        color: #29abe2;
+        text-decoration: underline;
+        font-size: 13.5px;
+    }
+
+    .badge-role {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: bold;
+        padding: 4px 10px;
+        border-radius: 100px;
+    }
+
+    .badge-role-user {
+        background: #e0f2fe;
+        color: #0284c7;
+    }
+
+    .badge-role-admin {
+        background: #fce7f3;
+        color: #c0392b;
+    }
+
+    .badge-status {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: bold;
+        padding: 4px 10px;
+        border-radius: 100px;
+    }
+
+    .badge-status-aktif {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .badge-status-nonaktif {
+        background: #f3f4f6;
+        color: #6b7280;
+    }
+</style>

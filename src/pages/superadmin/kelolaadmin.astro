@@ -1,0 +1,173 @@
+---
+// kelola-admin.astro — Halaman "Manajemen User" (Kelola Admin)
+
+interface AdminUser {
+  nama: string;
+  email: string;
+  unitKerja: string;
+  role: string;
+  status: "menunggu" | "aktif";
+}
+
+const daftarAdmin: AdminUser[] = [
+  {
+    nama: "Andi Prasetyo",
+    email: "andi.prasetyo@bkn.go.id",
+    unitKerja: "Biro Umum",
+    role: "Admin",
+    status: "menunggu",
+  },
+  {
+    nama: "Siti Rahayu",
+    email: "siti.rahayu@bkn.go.id",
+    unitKerja: "Biro Umum",
+    role: "Admin",
+    status: "aktif",
+  },
+  {
+    nama: "Budi Santoso",
+    email: "budi.santoso@bkn.go.id",
+    unitKerja: "Biro Umum",
+    role: "Admin",
+    status: "aktif",
+  },
+];
+
+const statusBadgeMap: Record<AdminUser["status"], { class: string; label: string }> = {
+  menunggu: { class: "badge-menunggu", label: "Menunggu" },
+  aktif: { class: "badge-aktif", label: "Aktif" },
+};
+
+const activePage = "kelola-admin";
+import SidebarSuperAdmin from "../../components/sidebarsuperadmin.astro";
+---
+
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manajemen User — SI MAPAN</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../../src/styles/admin.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <!-- ───────────── SIDEBAR ───────────── -->
+     <SidebarSuperAdmin activePage="kelolaadmin" />  
+
+      <!-- ───────────── MAIN ───────────── -->
+      <div class="main">
+        <header class="topbar">
+          <div class="topbar-title">
+            <h1>Manajemen User</h1>
+            <p>Kelola akun pengguna</p>
+          </div>
+          <div class="topbar-actions">
+            <button class="notif-btn" title="Notifikasi">
+              <svg viewBox="0 0 20 20" fill="currentColor">
+                <path
+                  d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM8.5 16a1.5 1.5 0 003 0h-3z"
+                ></path>
+              </svg>
+              <span class="notif-dot"></span>
+            </button>
+          </div>
+        </header>
+
+        <main class="content">
+          <div class="table-card">
+            <div class="table-header">
+              <div class="table-title">
+                <span class="table-title-bar"></span>
+                Daftar Admin
+              </div>
+            </div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Nama</th>
+                  <th>Email</th>
+                  <th>Unit Kerja</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  daftarAdmin.map((user) => {
+                    const status = statusBadgeMap[user.status];
+                    return (
+                      <tr>
+                        <td>{user.nama}</td>
+                        <td>
+                          <a href={`mailto:${user.email}`} class="ticket-link">
+                            {user.email}
+                          </a>
+                        </td>
+                        <td>{user.unitKerja}</td>
+                        <td>
+                          <span class="badge badge-role">{user.role}</span>
+                        </td>
+                        <td>
+                          <span class={`badge ${status.class}`}>{status.label}</span>
+                        </td>
+                        <td>
+                          {user.status === "menunggu" && (
+                            <div style="display:flex; gap:8px;">
+                              <button class="btn-action btn-approve">Setuju</button>
+                              <button class="btn-action btn-reject">Tolak</button>
+                            </div>
+                          )}
+                          {user.status === "aktif" && (
+                            <button class="btn-action">Edit</button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })
+                }
+              </tbody>
+            </table>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <style>
+      /* Badge role (Admin) — pil biru muda */
+      .badge-role {
+        background: #e8f7fd;
+        color: #29abe2;
+        border: 1px solid #bfe9f8;
+      }
+
+      /* Badge status Aktif — pil hijau */
+      .badge-aktif {
+        background: linear-gradient(120deg, #dcfce7, #bbf7d0);
+        color: #15803d;
+        border: 1px solid #bbf7d0;
+      }
+
+      /* Variasi warna tombol aksi khusus status Menunggu */
+      .btn-approve {
+        border-color: #16a34a;
+        color: #16a34a;
+      }
+      .btn-approve:hover {
+        background: #f0fdf4;
+      }
+      .btn-reject {
+        border-color: #ef4444;
+        color: #ef4444;
+      }
+      .btn-reject:hover {
+        background: #fef2f2;
+      }
+    </style>
+  </body>
+</html>

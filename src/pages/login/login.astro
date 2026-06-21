@@ -47,9 +47,8 @@ import '../../styles/global.css'
         <div class="select-wrapper">
           <select id="role" name="role">
             <option value="user" selected>User</option>
+            <option value="superadmin">Super Admin</option>            
             <option value="admin">Admin</option>
-            <option value="manager">Manager</option>
-            <option value="staff">Staff</option>
           </select>
           <span class="select-icon">
             <svg viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -105,12 +104,12 @@ import '../../styles/global.css'
     if (role === 'admin') {
       // Jika yang dipilih admin, arahkan ke halaman form username & password admin
       window.location.href = `./login/gmail?role=${role}`;
-    } else if (role === 'manager') {
-      // Jika manager, langsung lempar ke dashboard manager dengan query string
-      window.location.href = `/dashboard?role=${role}`;
+    } else if (role === 'superadmin') {
+      // Jika superadmin, langsung lempar ke dashboard superadmin dengan query string
+      window.location.href = `./login/gmail?role=${role}`;
     }
-    else if (role === 'staff') {
-      // Jika staff, langsung lempar ke dashboard staff dengan query string
+    else if (role === 'admin') {
+      // Jika admin, langsung lempar ke dashboard admin dengan query string
       window.location.href = `./login/gmail?role=${role}`;
     }
     

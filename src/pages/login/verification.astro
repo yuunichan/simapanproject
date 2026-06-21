@@ -175,17 +175,14 @@ import '../../styles/global.css';
         const role = urlParams.get('role'); // akan mengambil string 'admin', 'manager', dll.
 
         // 2. Arahkan halaman berdasarkan role yang didapat
-        if (role === 'admin') {
+        if (role === 'superadmin') {
           console.log("Nilai role sebelum pindah:", role);
-          window.location.href = `/admin/dashboard?role=${encodeURIComponent(role)}`;
+          window.location.href = `/superadmin/kelolaadmin?role=${encodeURIComponent(role)}`;
         } else if(role === 'user') {
           window.location.href = `/user/dashboard?role=${encodeURIComponent(role)}`;
-        } else if (role === 'manager') {
-          window.location.href = '/manager/dashboard'; // sesuaikan dengan folder rute managermu
-        } else if (role === 'staff') {
-          console.log("Nilai role sebelum pindah:", role); // Cek di console browser apakah muncul nilainya
-          window.location.href = `/staff/dashboard?role=${encodeURIComponent(role)}`;  
-              }else {
+        } else if (role === 'admin') {
+          window.location.href = '/admin/dashboard'; // sesuaikan dengan folder rute managermu
+        } else {
 
         }
 

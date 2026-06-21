@@ -1,0 +1,89 @@
+---
+import simapanLogo from "../assets/Logo_simapan.png";
+
+const { activePage = "beranda" } = Astro.props;
+---
+
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <img
+            class="logo-brand-img"
+            src={simapanLogo.src}
+            alt="Sistem Informasi Manajemen Aset dan Ruangan"
+        />
+    </div>
+
+    <nav class="nav-section">
+        <p class="nav-section-label">Penggunaan Ruangan</p>
+
+        <!-- Beranda -->
+        <a
+            href="/admin/dashboard"
+            class={`nav-item ${activePage === "beranda" ? "active" : ""}`}
+        >
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                    d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h4a1 1 0 001-1v-3h2v3a1 1 0 001 1h4a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"
+                ></path>
+            </svg>
+            Beranda
+        </a>
+
+        <!-- Persetujuan -->
+        <a
+            href="/superadmin/persetujuan"
+            class={`nav-item ${activePage === "persetujuan" ? "active" : ""}`}
+        >
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                    fill-rule="evenodd"
+                    d="M2 4.75A2.75 2.75 0 014.75 2h6.5A2.75 2.75 0 0114 4.75v.514a2.751 2.751 0 011.443.526l1.262 1.262a2.75 2.75 0 010 3.89l-1.262 1.262A2.751 2.751 0 0114 12.736v.514A2.75 2.75 0 0111.25 16h-6.5A2.75 2.75 0 012 13.25v-8.5zm9.78 1.97a.75.75 0 10-1.06-1.06l-3.97 3.97-1.47-1.47a.75.75 0 10-1.06 1.06l2 2a.75.75 0 001.06 0l4.5-4.5z"
+                    clip-rule="evenodd"></path>
+            </svg>
+            Persetujuan
+        </a>
+
+        <!-- Kelola Admin -->
+        <a
+            href="/superadmin/kelolaadmin"
+            class={`nav-item ${activePage === "kelolaadmin" ? "active" : ""}`}
+        >
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                    d="M7 8a3 3 0 100-6 3 3 0 000 6zM14.5 9a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM1.615 16.428a1.224 1.224 0 01-.569-1.175 6.002 6.002 0 0111.908 0c.058.467-.172.92-.57 1.174A9.953 9.953 0 017 18a9.953 9.953 0 01-5.385-1.572zM14.5 16h-.106c.07-.297.088-.605.048-.91a7.502 7.502 0 00-3.105-5.108A6.5 6.5 0 0118 15.5a.5.5 0 01-.5.5h-3z"
+                ></path>
+            </svg>
+            Kelola Admin
+        </a>
+
+        <!-- Kelola Ruangan -->
+        <a
+            href="/superadmin/kelolaruangan"
+            class={`nav-item ${activePage === "kelolaruangan" ? "active" : ""}`}
+        >
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                    fill-rule="evenodd"
+                    d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
+                    clip-rule="evenodd"></path>
+            </svg>
+            Kelola Ruangan
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="avatar">AP</div>
+        <div class="user-info">
+            <p class="user-name">Andi Prasetyo</p>
+            <p class="user-role">Karyawan</p>
+        </div>
+        <button class="logout-btn" title="Keluar">
+            <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                    fill-rule="evenodd"
+                    d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
+                    clip-rule="evenodd"></path>
+            </svg>
+        </button>
+    </div>
+</aside>

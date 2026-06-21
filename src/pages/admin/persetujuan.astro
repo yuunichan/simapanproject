@@ -1,0 +1,186 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import SidebarAdmin from "../../components/sidebaradmin.astro";
+
+const daftarPersetujuan = [
+    {
+        noTiket: "R/013/03/2026",
+        pemohon: "Siti Rahayu",
+        unitKerja: "Biro Hukum",
+        ruangan: "Ruang Mawar",
+        lokasi: "Gedung 1",
+        tanggal: "16 Mar 2026",
+        jam: "10:00–12:00",
+        tipe: "Full Offline",
+        status: "menunggu",
+    },
+    {
+        noTiket: "R/012/03/2026",
+        pemohon: "Andi Prasetyo",
+        unitKerja: "Biro SDMO",
+        ruangan: "Ruang Mawar",
+        lokasi: "Gedung 1",
+        tanggal: "15 Mar 2026",
+        jam: "09:00–12:00",
+        tipe: "Rapat Internal",
+        status: "menunggu",
+    },
+    {
+        noTiket: "R/011/03/2026",
+        pemohon: "Andi Prasetyo",
+        unitKerja: "Puspenkom",
+        ruangan: "Ruang CAT 1",
+        lokasi: "Gedung 2",
+        tanggal: "10 Mar 2026",
+        jam: "08:00–Selesai",
+        tipe: "Pelatihan",
+        status: "disetujui",
+    },
+    {
+        noTiket: "R/010/02/2026",
+        pemohon: "Andi Prasetyo",
+        unitKerja: "Biro Renma",
+        ruangan: "Ruang Aula",
+        lokasi: "Gedung 1",
+        tanggal: "28 Feb 2026",
+        jam: "09:00–16:00",
+        tipe: "Seminar",
+        status: "ditolak",
+    },
+];
+
+const statusLabel = {
+    menunggu: "Menunggu",
+    disetujui: "Disetujui",
+    ditolak: "Ditolak",
+};
+---
+
+<Layout title="Persetujuan Pengajuan — SI MAPAN">
+    <div class="layout">
+        <SidebarAdmin activePage="persetujuan" />
+
+        <div class="main">
+            <header class="topbar">
+                <div class="topbar-title">
+                    <h1>Persetujuan Pengajuan</h1>
+                    <p>Kelola persetujuan ruangan</p>
+                </div>
+                <div class="topbar-actions">
+                    <button class="notif-btn" title="Notifikasi">
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path
+                                d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM8.5 16a1.5 1.5 0 003 0h-3z"
+                            ></path>
+                        </svg>
+                        <span class="notif-dot"></span>
+                    </button>
+                </div>
+            </header>
+
+            <main class="content">
+                <section class="table-card">
+                    <div class="table-header">
+                        <div class="table-title">
+                            <span class="table-title-bar"></span>
+                            Daftar Persetujuan
+                        </div>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No. Tiket</th>
+                                <th>Pemohon</th>
+                                <th>Unit Kerja</th>
+                                <th>Ruangan</th>
+                                <th>Lokasi</th>
+                                <th>Tanggal</th>
+                                <th>Jam</th>
+                                <th>Tipe</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                daftarPersetujuan.map((item) => (
+                                    <tr>
+                                        <td>
+                                            <a
+                                                href={`/superadmin/persetujuan/${item.noTiket}`}
+                                                class="ticket-link"
+                                            >
+                                                {item.noTiket}
+                                            </a>
+                                        </td>
+                                        <td>{item.pemohon}</td>
+                                        <td>{item.unitKerja}</td>
+                                        <td>{item.ruangan}</td>
+                                        <td>{item.lokasi}</td>
+                                        <td class="td-date">{item.tanggal}</td>
+                                        <td class="td-date">{item.jam}</td>
+                                        <td>{item.tipe}</td>
+                                        <td>
+                                            <span class={`badge badge-${item.status}`}>
+                                                {statusLabel[item.status]}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {item.status === "menunggu" ? (
+                                                <div class="aksi-group">
+                                                    <button class="btn-setuju">Setuju</button>
+                                                    <button class="btn-tolak">Tolak</button>
+                                                </div>
+                                            ) : item.status === "disetujui" ? (
+                                                <button class="btn-action">Lihat</button>
+                                            ) : (
+                                                <button class="btn-action">Detail</button>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))
+                            }
+                        </tbody>
+                    </table>
+                </section>
+            </main>
+        </div>
+    </div>
+</Layout>
+
+<style>
+    /* Tambahan baru, tidak mengubah CSS global yang sudah ada */
+    .aksi-group {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-setuju {
+        font-size: 12px;
+        padding: 5px 14px;
+        border-radius: 6px;
+        border: 2px solid #16a34a;
+        background: transparent;
+        color: #16a34a;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    .btn-setuju:hover {
+        background: #f0fdf4;
+    }
+
+    .btn-tolak {
+        font-size: 12px;
+        padding: 5px 14px;
+        border-radius: 6px;
+        border: 2px solid #dc2626;
+        background: transparent;
+        color: #dc2626;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    .btn-tolak:hover {
+        background: #fef2f2;
+    }
+</style>
