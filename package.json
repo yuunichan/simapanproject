@@ -14,7 +14,9 @@
   "dependencies": {
     "@astrojs/react": "^5.0.7",
     "astro": "^6.2.2",
+    "lucide-react": "^1.21.0",
     "react": "^19.2.7",
+    "react-day-picker": "^10.0.1",
     "react-dom": "^19.2.7",
     "react-router-dom": "^7.18.0"
   },

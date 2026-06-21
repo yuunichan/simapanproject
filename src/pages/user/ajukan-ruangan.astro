@@ -1,8 +1,166 @@
 ---
-// SI MAPAN - Ajukan Penggunaan Ruangan
-// Astro component matching the provided design
+// SI MAPAN - Ajukan Penggunaan Ruangan (Single Page: Mode + Ruangan & Jadwal)
 
 import Sidebar from "../../components/sidebar_user.astro";
+
+// Data ruangan (idealnya dari API/database)
+const rooms = [
+  {
+    id: "aula",
+    name: "Ruang Aula",
+    floor: "Lantai 2",
+    gedung: "Gedung 1",
+    capacity: "100–200",
+    status: "busy",
+    fasilitas: ["Panggung", "LCD Besar", "Sound System", "AC", "Microphone"],
+    photos: ["/images/aula-1.jpg", "/images/aula-2.jpg", "/images/aula-3.jpg"],
+  },
+  {
+    id: "mawar",
+    name: "Ruang Mawar",
+    floor: "Lantai 1",
+    gedung: "Gedung 1",
+    capacity: "10–30",
+    status: "available",
+    fasilitas: ["LCD", "AC", "Whiteboard"],
+    photos: ["/images/mawar-1.jpg"],
+  },
+  {
+    id: "control",
+    name: "Control Room",
+    floor: "Lantai 1",
+    gedung: "Gedung 1",
+    capacity: "0–10",
+    status: "available",
+    fasilitas: ["Monitor", "AC"],
+    photos: ["/images/control-1.jpg"],
+  },
+  {
+    id: "data",
+    name: "Ruang Data",
+    floor: "Lantai 1",
+    gedung: "Gedung 1",
+    capacity: "5–20",
+    status: "available",
+    fasilitas: ["AC", "Proyektor"],
+    photos: ["/images/data-1.jpg"],
+  },
+  {
+    id: "kokpit",
+    name: "Ruang Kokpit",
+    floor: "Lantai 3",
+    gedung: "Gedung 1",
+    capacity: "5–15",
+    status: "available",
+    fasilitas: ["AC", "TV", "Whiteboard"],
+    photos: ["/images/kokpit-1.jpg"],
+  },
+];
+
+// Hari & jam slot
+const jamSlots = [
+  "07:00",
+  "08:00",
+  "09:00",
+  "10:00",
+  "11:00",
+  "12:00",
+  "13:00",
+  "14:00",
+  "15:00",
+  "16:00",
+  "17:00",
+  "18:00",
+];
+
+// Status jam contoh (busy/sebagian/available) — nanti dari API
+const jamStatus: Record<string, "sebagian" | "available"> = {
+  "07:00": "available",
+  "08:00": "available",
+  "09:00": "available",
+  "10:00": "sebagian",
+  "11:00": "available",
+  "12:00": "available",
+  "13:00": "sebagian",
+  "14:00": "available",
+  "15:00": "available",
+  "16:00": "available",
+  "17:00": "available",
+  "18:00": "available",
+};
+
+const kalenderStatus: Record<string, "available" | "sebagian" | "penuh"> = {
+  "2026-04-20": "available",
+  "2026-04-21": "available",
+  "2026-04-22": "sebagian",
+  "2026-04-23": "available",
+  "2026-04-24": "available",
+  "2026-04-25": "available",
+  "2026-04-26": "available",
+  "2026-04-27": "available",
+  "2026-04-28": "available",
+  "2026-04-29": "available",
+  "2026-04-30": "available",
+  "2026-05-01": "available",
+  "2026-05-02": "sebagian",
+  "2026-05-03": "penuh",
+  "2026-05-04": "available",
+  "2026-05-05": "available",
+  "2026-05-06": "sebagian",
+  "2026-05-07": "available",
+  "2026-05-08": "available",
+  "2026-05-09": "available",
+  "2026-05-10": "available",
+};
+
+function getMonthRange(statusMap: Record<string, string>) {
+  const dates = Object.keys(statusMap).sort();
+  if (dates.length === 0) {
+    return [];
+  }
+
+  const start = new Date(dates[0]);
+  const end = new Date(dates[dates.length - 1]);
+  const months: string[] = [];
+  let year = start.getFullYear();
+  let month = start.getMonth();
+
+  while (year < end.getFullYear() || month <= end.getMonth()) {
+    months.push(`${year}-${String(month + 1).padStart(2, "0")}`);
+    month += 1;
+    if (month > 11) {
+      month = 0;
+      year += 1;
+    }
+  }
+
+  return months;
+}
+
+function getDatesForMonth(monthKey: string) {
+  const [year, month] = monthKey.split("-").map(Number);
+  const daysInMonth = new Date(year, month, 0).getDate();
+  return Array.from(
+    { length: daysInMonth },
+    (_, index) =>
+      `${year}-${String(month).padStart(2, "0")}-${String(index + 1).padStart(2, "0")}`,
+  );
+}
+
+const kalenderMonths = getMonthRange(kalenderStatus);
+const kalenderDates = kalenderMonths.flatMap(getDatesForMonth);
+const dayNames = ["MIN", "SEN", "SEL", "RAB", "KAM", "JUM", "SAB"];
+
+function formatDayLabel(dateString: string) {
+  const date = new Date(dateString);
+  return dayNames[date.getDay()];
+}
+
+function formatMonthLabel(monthKey: string) {
+  const [year, month] = monthKey.split("-");
+  const date = new Date(`${year}-${month}-01`);
+  return date.toLocaleString("id-ID", { month: "long", year: "numeric" });
+}
 ---
 
 <!doctype html>
@@ -52,9 +210,30 @@ import Sidebar from "../../components/sidebar_user.astro";
 
         <!-- Content Area -->
         <div class="content">
-          <div class="card">
-            <h2 class="card-title">Pilih Tipe Kegiatan</h2>
+          <div class="hero">
+            <div class="hero-text">
+              <div class="hero-ajukan">
+                <div class="layout-ajukan">
+                  <img
+                    class="img-ajukan"
+                    src="../../../src/assets/ajukan.png"
+                    alt="Ajukan"
+                  />
+                </div>
+                <div class="hero-text">
+                  <h5 class="hero-name-aju">Ajukan Penggunaan Ruangan</h5>
+                  <p class="hero-division">
+                    Pilih ruangan, tanggal, jam, dan lengkapi detail kegiatan
+                    Anda
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
 
+          <!-- ============ STEP 1: PILIH MODE ============ -->
+          <div class="card" id="cardMode">
+            <h5 class="card-title">Pilih Mode &amp; Ruangan</h5>
             <!-- Warning Banner -->
             <div class="alert-warning">
               <svg
@@ -81,12 +260,8 @@ import Sidebar from "../../components/sidebar_user.astro";
 
             <!-- Activity Type Cards -->
             <div class="type-cards">
-              <!-- Full Offline Card (selected) -->
-              <div
-                class="type-card selected"
-                id="card-offline"
-                onclick="selectCard('offline')"
-              >
+              <!-- Full Offline Card -->
+              <div class="type-card" id="card-offline" data-mode="offline">
                 <div class="type-icon">
                   <svg
                     viewBox="0 0 24 24"
@@ -109,11 +284,7 @@ import Sidebar from "../../components/sidebar_user.astro";
               </div>
 
               <!-- Hybrid Card -->
-              <div
-                class="type-card"
-                id="card-hybrid"
-                onclick="selectCard('hybrid')"
-              >
+              <div class="type-card" id="card-hybrid" data-mode="hybrid">
                 <div class="type-icon">
                   <svg
                     viewBox="0 0 24 24"
@@ -135,32 +306,1371 @@ import Sidebar from "../../components/sidebar_user.astro";
               </div>
             </div>
           </div>
+
+          <!-- ============ STEP 2: RUANGAN & JADWAL (muncul setelah mode dipilih) ============ -->
+          <div
+            class="card jadwal-section"
+            id="cardJadwal"
+            style="display:none;"
+          >
+            <h5 class="card-title">
+              Pilih Ruangan &amp; Jadwal
+              <span class="mode-badge" id="modeBadge"></span>
+            </h5>
+
+            <div class="panel-grid">
+              <!-- ── LEFT PANEL ── -->
+              <div class="panel-left">
+                <div class="panel-head">
+                  <span>🏢</span>
+                  <div>
+                    <p class="panel-title">Gedung &amp; Ruangan</p>
+                    <p class="panel-sub">Pilih gedung lalu klik ruangan</p>
+                  </div>
+                </div>
+
+                <!-- Tabs gedung -->
+                <div class="gedung-tabs">
+                  {
+                    ["Gedung 1", "Gedung 2", "Gedung 3", "Outdoor"].map(
+                      (g, i) => (
+                        <button
+                          class={`gtab${i === 0 ? " active" : ""}`}
+                          data-gedung={g}
+                        >
+                          {g}
+                        </button>
+                      ),
+                    )
+                  }
+                </div>
+
+                <!-- Foto gedung -->
+                <div class="gedung-foto">
+                  <img
+                    class="gedung-foto-image"
+                    src="../../../src/assets/gedung1.png"
+                    alt="Gedung 1"
+                  />
+                  <div class="gedung-foto-label">
+                    <span>Gedung 1</span>
+                    <p>Lantai 1 & 2</p>
+                  </div>
+                </div>
+
+                <!-- Daftar ruangan -->
+                <div class="room-list">
+                  {
+                    rooms.map((r) => (
+                      <button
+                        class="room-item"
+                        data-id={r.id}
+                        data-room={JSON.stringify(r)}
+                      >
+                        <div class="room-info">
+                          <p class="room-name">{r.name}</p>
+                          <p class="room-meta">
+                            {r.floor}
+                            <svg
+                              width="11"
+                              height="11"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2"
+                            >
+                              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                              <circle cx="9" cy="7" r="4" />
+                              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            </svg>
+                            {r.capacity}
+                          </p>
+                        </div>
+                        <span class={`room-dot ${r.status}`} />
+                      </button>
+                    ))
+                  }
+                </div>
+              </div>
+
+              <!-- ── RIGHT PANEL ── -->
+              <div class="panel-right">
+                <!-- Empty state -->
+                <div class="empty-state" id="emptyState">
+                  <div class="empty-icon">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.2"
+                    >
+                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+                      ></path>
+                      <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                  </div>
+                  <h3>Pilih ruangan terlebih dahulu</h3>
+                  <p>
+                    Klik ruangan di panel kiri untuk melihat foto, kalender
+                    ketersediaan, dan pilih jadwal booking.
+                  </p>
+                </div>
+
+                <!-- Room detail -->
+                <div class="room-detail" id="roomDetail">
+                  <!-- Foto carousel -->
+                  <div class="carousel" id="carousel">
+                    <div class="carousel-track" id="carouselTrack">
+                      <div class="carousel-slide">
+                        <div class="foto-placeholder"></div>
+                      </div>
+                      <div class="carousel-slide">
+                        <div class="foto-placeholder"></div>
+                      </div>
+                      <div class="carousel-slide">
+                        <div class="foto-placeholder"></div>
+                      </div>
+                    </div>
+                    <button class="carousel-btn prev" id="carouselPrev"
+                      >‹</button
+                    >
+                    <button class="carousel-btn next" id="carouselNext"
+                      >›</button
+                    >
+                    <div class="carousel-badge lantai" id="badgeLantai">
+                      Lantai 2
+                    </div>
+                    <div class="carousel-badge kapasitas" id="badgeKapasitas">
+                      👥 200 orang
+                    </div>
+                    <div class="carousel-dots" id="carouselDots"></div>
+                  </div>
+
+                  <!-- Info ruangan -->
+                  <div class="detail-info">
+                    <h2 class="detail-name" id="detailName">—</h2>
+                    <p class="detail-loc" id="detailLoc">—</p>
+                    <div class="fasilitas-list" id="fasilitasList"></div>
+                  </div>
+
+                  <!-- Pilih Tanggal & Slot Jam -->
+                  <div class="jadwal-grid">
+                    <!-- Kalender -->
+                    <div class="jadwal-card jadwal-calendar-card">
+                      <div class="calendar-header">
+                        <div>
+                          <div class="calendar-title">Pilih Tanggal</div>
+                          <div class="calendar-subtitle">
+                            <span id="selectedCount">5/5 hari</span>
+                          </div>
+                        </div>
+                        <div class="calendar-nav">
+                          <button class="cal-arrow" type="button" id="calPrev"
+                            >←</button
+                          >
+                          <span id="calMonthLabel"
+                            >{
+                              formatMonthLabel(kalenderDates[0].slice(0, 7))
+                            }</span
+                          >
+                          <button class="cal-arrow" type="button" id="calNext"
+                            >→</button
+                          >
+                        </div>
+                      </div>
+                      <div class="legend legend-inline">
+                        <span class="legend-dot available"></span>Tersedia
+                        <span class="legend-dot sebagian"></span>Sebagian
+                        <span class="legend-dot penuh"></span>Penuh
+                      </div>
+                      <div class="date-row" id="dateRow">
+                        {
+                          kalenderDates.map((date) => (
+                            <button
+                              class={`date-card ${kalenderStatus[date] ?? "available"} ${date >= "2026-04-26" && date <= "2026-04-30" ? "selected" : ""}`}
+                              data-date={date}
+                              data-status={kalenderStatus[date]}
+                              data-month={date.slice(0, 7)}
+                              type="button"
+                            >
+                              <span class="date-day">
+                                {formatDayLabel(date)}
+                              </span>
+                              <span class="date-number">{date.slice(-2)}</span>
+                            </button>
+                          ))
+                        }
+                      </div>
+                    </div>
+
+                    <!-- Slot jam -->
+                    <div class="jadwal-card jadwal-slot-card">
+                      <div class="jadwal-card-head">
+                        <span>🕐</span>
+                        <h4>Pilih Slot Jam</h4>
+                      </div>
+                      <p class="slot-hint">
+                        Per 1 jam, bisa multi-pilih.
+                        <span class="legend-dot penuh"></span>=Penuh
+                        <span class="legend-dot sebagian"></span>=Sebagian
+                      </p>
+                      <div class="slot-summary">
+                        <div class="summary-card summary-full">
+                          Seharian<br /><span>08:00 - 17:00</span>
+                        </div>
+                        <div class="summary-card summary-morning">
+                          Pagi<br /><span>08:00 - 12:00</span>
+                        </div>
+                        <div class="summary-card summary-afternoon">
+                          Siang<br /><span>13:00 - 16:00</span>
+                        </div>
+                      </div>
+                      <div class="slot-grid" id="slotGrid">
+                        {
+                          jamSlots.map((j, index) => {
+                            const endHour =
+                              String(Number(j.slice(0, 2)) + 1).padStart(
+                                2,
+                                "0",
+                              ) + ":00";
+                            return (
+                              <button
+                                class={`slot-btn ${jamStatus[j] ?? "available"}`}
+                                data-jam={j}
+                                type="button"
+                              >
+                                <span class="slot-time">{j}</span>
+                                <span class="slot-range">- {endHour}</span>
+                                <span class="slot-action">{jamStatus[j]}</span>
+                              </button>
+                            );
+                          })
+                        }
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /jadwal-grid -->
+
+                  <!-- Aksi -->
+                  <div class="action-row">
+                    <button class="btn-back" id="btnGantiMode"
+                      >← Ganti Mode</button
+                    >
+                    <button class="btn-next" id="btnLanjut"
+                      >Lanjut ke Konfirmasi →</button
+                    >
+                  </div>
+                </div>
+                <!-- /room-detail -->
+              </div>
+              <!-- /panel-right -->
+            </div>
+            <!-- /panel-grid -->
+          </div>
+          <!-- /cardJadwal -->
         </div>
       </main>
     </div>
 
     <script>
-      // Highlight card saat diklik
-      function selectCard(type: string) {
-        document
-          .querySelectorAll(".type-card")
-          .forEach((c) => c.classList.remove("selected"));
-        document.getElementById("card-" + type)?.classList.add("selected");
+      // ====== STATE ======
+      let selectedMode = null;
+
+      const cardMode = document.getElementById("cardMode");
+      const cardJadwal = document.getElementById("cardJadwal");
+      const modeBadge = document.getElementById("modeBadge");
+      const emptyState = document.getElementById("emptyState");
+      const roomDetail = document.getElementById("roomDetail");
+
+      const modeLabel = {
+        offline: "Full Offline",
+        hybrid: "Hybrid",
+      };
+
+      // ====== PILIH MODE (Full Offline / Hybrid) ======
+      document.querySelectorAll(".type-card").forEach((card) => {
+        card.addEventListener("click", () => {
+          const mode = card.dataset.mode;
+          if (!mode) {
+            return;
+          }
+          selectedMode = mode;
+
+          // Highlight card terpilih
+          document
+            .querySelectorAll(".type-card")
+            .forEach((c) => c.classList.remove("selected"));
+          card.classList.add("selected");
+
+          // Tampilkan badge mode di section jadwal
+          if (modeBadge) {
+            modeBadge.textContent = modeLabel[mode] ?? mode;
+          }
+
+          // Tampilkan section ruangan & jadwal di bawah
+          if (cardJadwal) {
+            cardJadwal.style.display = "block";
+            cardJadwal.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        });
+      });
+
+      // ====== GANTI MODE (kembali fokus ke pilihan mode) ======
+      document.getElementById("btnGantiMode")?.addEventListener("click", () => {
+        cardMode?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+
+      // ====== Carousel ======
+      let currentSlide = 0;
+      const track = document.getElementById("carouselTrack");
+      const dots = document.getElementById("carouselDots");
+      const totalSlides = 3;
+
+      function updateCarousel() {
+        if (!track || !dots) {
+          return;
+        }
+        track.style.transform = `translateX(-${currentSlide * 100}%)`;
+        dots.querySelectorAll(".dot").forEach((d, i) => {
+          d.classList.toggle("active", i === currentSlide);
+        });
       }
 
-      // Klik Full Offline → langsung ke step 2
-      document.getElementById("card-offline")?.addEventListener("click", () => {
-        const params = new URLSearchParams(window.location.search);
-        const role = params.get("role") ?? "";
-        window.location.href = `./ajukan/ruangan-jadwal?mode=offline&role=${encodeURIComponent(role)}`;
+      document.getElementById("carouselPrev")?.addEventListener("click", () => {
+        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+        updateCarousel();
+      });
+      document.getElementById("carouselNext")?.addEventListener("click", () => {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        updateCarousel();
       });
 
-      // Klik Hybrid → ke step 2 dengan mode hybrid
-      document.getElementById("card-hybrid")?.addEventListener("click", () => {
+      if (dots) {
+        for (let i = 0; i < totalSlides; i++) {
+          const d = document.createElement("span");
+          d.className = "dot" + (i === 0 ? " active" : "");
+          dots.appendChild(d);
+        }
+      }
+
+      // ====== Room select ======
+      const roomButtons = document.querySelectorAll(".room-item");
+
+      roomButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          roomButtons.forEach((b) => b.classList.remove("selected"));
+          btn.classList.add("selected");
+
+          const roomData = btn.dataset.room;
+          const r = roomData ? JSON.parse(roomData) : null;
+          if (!r) {
+            return;
+          }
+
+          const detailName = document.getElementById("detailName");
+          const detailLoc = document.getElementById("detailLoc");
+          const badgeLantai = document.getElementById("badgeLantai");
+          const badgeKapasitas = document.getElementById("badgeKapasitas");
+
+          if (detailName) {
+            detailName.textContent = r.name;
+          }
+          if (detailLoc) {
+            detailLoc.textContent = `${r.floor} — ${r.gedung}`;
+          }
+          if (badgeLantai) {
+            badgeLantai.textContent = r.floor;
+          }
+          if (badgeKapasitas) {
+            badgeKapasitas.textContent = `👥 ${r.capacity} orang`;
+          }
+
+          const fl = document.getElementById("fasilitasList");
+          if (fl) {
+            fl.innerHTML = r.fasilitas
+              .map((f) => `<span class="fas-tag">${f}</span>`)
+              .join("");
+          }
+
+          currentSlide = 0;
+          updateCarousel();
+
+          if (emptyState) {
+            emptyState.style.display = "none";
+          }
+          if (roomDetail) {
+            roomDetail.style.display = "flex";
+          }
+        });
+      });
+
+      // ====== Slot jam toggle ======
+      document.querySelectorAll(".slot-btn:not([disabled])").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          btn.classList.toggle("selected");
+          const action = btn.querySelector(".slot-action");
+          if (action) {
+            action.textContent = btn.classList.contains("selected")
+              ? "✓ Dipilih"
+              : "Pilih";
+          }
+        });
+      });
+
+      // Kalender: custom tanggal kustom dengan status warna
+      const dateCards = document.querySelectorAll(".date-card");
+      const selectedCount = document.getElementById("selectedCount");
+      const monthLabel = document.getElementById("calMonthLabel");
+      const prevMonthBtn = document.getElementById("calPrev");
+      const nextMonthBtn = document.getElementById("calNext");
+      const monthOptions = Array.from(
+        new Set(
+          Array.from(dateCards)
+            .map((btn) => btn.dataset.month)
+            .filter((month) => !!month),
+        ),
+      ).sort();
+      let currentMonthIndex = 0;
+      let selectedStart = "2026-04-26";
+      let selectedEnd = "2026-04-30";
+
+      function getDayDiff(start, end) {
+        const d1 = new Date(start);
+        const d2 = new Date(end);
+        return Math.round(
+          (d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24),
+        );
+      }
+
+      function formatMonthLabel(monthKey) {
+        const [year, month] = monthKey.split("-");
+        const date = new Date(`${year}-${month}-01`);
+        return date.toLocaleString("id-ID", { month: "long", year: "numeric" });
+      }
+
+      function updateMonthView() {
+        if (
+          !monthLabel ||
+          !prevMonthBtn ||
+          !nextMonthBtn ||
+          monthOptions.length === 0
+        ) {
+          return;
+        }
+
+        const currentMonth = monthOptions[currentMonthIndex];
+        monthLabel.textContent = formatMonthLabel(currentMonth);
+        dateCards.forEach((btn) => {
+          btn.classList.toggle(
+            "hidden-month",
+            btn.dataset.month !== currentMonth,
+          );
+        });
+        prevMonthBtn.disabled = currentMonthIndex === 0;
+        nextMonthBtn.disabled = currentMonthIndex === monthOptions.length - 1;
+      }
+
+      function updateSelectedDates() {
+        dateCards.forEach((btn) => {
+          const date = btn.dataset.date;
+          if (!date) {
+            return;
+          }
+
+          const inRange =
+            selectedStart && selectedEnd
+              ? date >= selectedStart && date <= selectedEnd
+              : date === selectedStart;
+          btn.classList.toggle("selected", inRange);
+        });
+
+        const count = selectedEnd
+          ? getDayDiff(selectedStart, selectedEnd) + 1
+          : 1;
+        if (selectedCount) {
+          selectedCount.textContent = `${count}/5 hari`;
+        }
+      }
+
+      dateCards.forEach((btn) => {
+        if (btn.dataset.status === "penuh") {
+          btn.classList.add("disabled");
+        }
+
+        btn.addEventListener("click", () => {
+          if (btn.dataset.status === "penuh") {
+            return;
+          }
+
+          const date = btn.dataset.date;
+          if (!date) {
+            return;
+          }
+
+          if (!selectedStart || (selectedStart && selectedEnd)) {
+            selectedStart = date;
+            selectedEnd = "";
+          } else {
+            selectedEnd = date;
+            if (selectedEnd < selectedStart) {
+              [selectedStart, selectedEnd] = [selectedEnd, selectedStart];
+            }
+          }
+          updateSelectedDates();
+        });
+      });
+
+      prevMonthBtn?.addEventListener("click", () => {
+        if (currentMonthIndex > 0) {
+          currentMonthIndex -= 1;
+          updateMonthView();
+        }
+      });
+
+      nextMonthBtn?.addEventListener("click", () => {
+        if (currentMonthIndex < monthOptions.length - 1) {
+          currentMonthIndex += 1;
+          updateMonthView();
+        }
+      });
+
+      updateMonthView();
+      updateSelectedDates();
+
+      // ====== Lanjut ke Konfirmasi ======
+      document.getElementById("btnLanjut")?.addEventListener("click", () => {
         const params = new URLSearchParams(window.location.search);
         const role = params.get("role") ?? "";
-        window.location.href = `./ajukan/ruangan-jadwal?mode=hybrid&role=${encodeURIComponent(role)}`;
+        const slots = [...document.querySelectorAll(".slot-btn.selected")]
+          .map((b) => b.dataset.jam)
+          .join(",");
+        const room =
+          document.querySelector(".room-item.selected")?.dataset.id ?? "";
+
+        if (!selectedMode) {
+          alert(
+            "Harap pilih mode kegiatan (Full Offline / Hybrid) terlebih dahulu.",
+          );
+          return;
+        }
+        if (!room || !selectedStart || !slots) {
+          alert("Harap pilih ruangan, tanggal, dan minimal 1 slot jam.");
+          return;
+        }
+
+        const tglISO = selectedStart;
+
+        window.location.href = `./ajukan/konfirmasi?role=${encodeURIComponent(role)}&mode=${selectedMode}&room=${room}&tgl=${tglISO}&jam=${slots}`;
       });
     </script>
+
+    <style>
+      /* ===== Section mode badge (CSS .card-title & .type-card.selected sudah ada di admin.css) ===== */
+      .mode-badge {
+        display: inline-block;
+        margin-left: 10px;
+        font-size: 12px;
+        font-weight: 800;
+        color: #0369a1;
+        background: #e0f2fe;
+        padding: 3px 12px;
+        border-radius: 20px;
+        vertical-align: middle;
+      }
+
+      /* ===== Jadwal section spacing ===== */
+      .jadwal-section {
+        margin-top: 20px;
+      }
+
+      /* ===== Panel grid (dari ruangan-jadwal) ===== */
+      .panel-grid {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 16px;
+        margin-top: 16px;
+        min-height: 560px;
+        align-items: start;
+      }
+
+      .panel-left {
+        background: #fff;
+        border: 1px solid #e8ecf0;
+        border-radius: 14px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        position: sticky;
+        top: 24px;
+        align-self: start;
+        max-height: calc(100vh - 100px);
+      }
+      .panel-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 16px 10px;
+        border-bottom: 1px solid #f1f5f9;
+      }
+      .panel-title {
+        font-size: 14px;
+        font-weight: 800;
+        color: #1e293b;
+      }
+      .panel-sub {
+        font-size: 11px;
+        color: #94a3b8;
+        margin-top: 1px;
+      }
+
+      .gedung-tabs {
+        display: flex;
+        padding: 10px 12px 0;
+        border-bottom: 2px solid #f1f5f9;
+        gap: 0;
+      }
+      .gtab {
+        background: none;
+        border: none;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #94a3b8;
+        padding: 6px 10px 8px;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .gtab:hover {
+        color: #0ea5e9;
+      }
+      .gtab.active {
+        color: #0ea5e9;
+        border-bottom-color: #0ea5e9;
+        font-weight: 800;
+      }
+
+      .gedung-foto {
+        position: relative;
+        padding: 10px 12px 0;
+      }
+      .gedung-foto-image {
+        width: 100%;
+        border-radius: 14px;
+        object-fit: cover;
+        display: block;
+      }
+      .gedung-foto-label {
+        position: absolute;
+        left: 16px;
+        bottom: 16px;
+        background: rgba(15, 23, 42, 0.82);
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 14px;
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+      }
+      .gedung-foto-label span {
+        display: block;
+        font-weight: 800;
+        font-size: 13px;
+      }
+      .gedung-foto-label p {
+        margin: 4px 0 0;
+        font-size: 11px;
+        color: #d1d5db;
+      }
+
+      .room-list {
+        display: flex;
+        flex-direction: column;
+        padding: 8px 12px 12px;
+        gap: 6px;
+        overflow-y: auto;
+        flex: 1;
+      }
+      .room-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 12px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s;
+        background: #fff;
+        text-align: left;
+        width: 100%;
+      }
+      .room-item:hover {
+        border-color: #7dd3fc;
+        background: #f0f9ff;
+      }
+      .room-item.selected {
+        border-color: #0ea5e9;
+        background: #e0f2fe;
+      }
+      .room-name {
+        font-size: 13px;
+        font-weight: 700;
+        color: #1e293b;
+      }
+      .room-meta {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 11px;
+        color: #94a3b8;
+        margin-top: 2px;
+      }
+      .room-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .room-dot.available {
+        background: #22c55e;
+      }
+      .room-dot.busy {
+        background: #ef4444;
+      }
+
+      .panel-right {
+        background: #fff;
+        border: 1px solid #e8ecf0;
+        border-radius: 14px;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        overflow: hidden;
+        min-height: 560px;
+      }
+      .panel-right .empty-state {
+        padding: 48px 40px;
+      }
+      .room-detail {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        flex: 1;
+        overflow-y: auto;
+      }
+
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: 12px;
+        padding: 48px 40px;
+      }
+      .empty-icon {
+        width: 72px;
+        height: 72px;
+        background: #f8fafc;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #e2e8f0;
+      }
+      .empty-icon svg {
+        width: 32px;
+        height: 32px;
+        color: #cbd5e1;
+      }
+      .empty-state h3 {
+        font-size: 15px;
+        font-weight: 800;
+        color: #475569;
+      }
+      .empty-state p {
+        font-size: 13px;
+        color: #94a3b8;
+        max-width: 320px;
+        line-height: 1.6;
+      }
+
+      .carousel {
+        position: relative;
+        width: 100%;
+        height: 260px;
+        overflow: hidden;
+        flex-shrink: 0;
+        border-radius: 14px 14px 0 0;
+      }
+      .carousel-track {
+        display: flex;
+        height: 100%;
+        transition: transform 0.35s ease;
+      }
+      .carousel-slide {
+        min-width: 100%;
+        height: 100%;
+      }
+      .foto-placeholder {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #94a3b8, #64748b);
+      }
+      .carousel-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.85);
+        border: none;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        transition: background 0.15s;
+        z-index: 2;
+      }
+      .carousel-btn:hover {
+        background: #fff;
+      }
+      .prev {
+        left: 12px;
+      }
+      .next {
+        right: 12px;
+      }
+      .carousel-badge {
+        position: absolute;
+        top: 12px;
+        background: rgba(0, 0, 0, 0.55);
+        color: #fff;
+        font-size: 11.5px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 20px;
+        backdrop-filter: blur(4px);
+        z-index: 2;
+      }
+      .lantai {
+        left: 12px;
+      }
+      .kapasitas {
+        right: 12px;
+      }
+      .carousel-dots {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 6px;
+        z-index: 2;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        transition: background 0.2s;
+      }
+      .dot.active {
+        background: #fff;
+      }
+
+      .detail-info {
+        padding: 16px 20px 12px;
+        border-bottom: 1px solid #f1f5f9;
+      }
+      .detail-name {
+        font-size: 20px;
+        font-weight: 800;
+        color: #1e293b;
+      }
+      .detail-loc {
+        font-size: 13px;
+        color: #64748b;
+        margin-top: 2px;
+      }
+      .fasilitas-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 10px;
+      }
+      .fas-tag {
+        background: #e0f2fe;
+        color: #0369a1;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 20px;
+      }
+
+      .jadwal-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        padding: 16px 20px;
+        flex: 1;
+      }
+      .jadwal-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .jadwal-card-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .jadwal-card-head h4 {
+        font-size: 13.5px;
+        font-weight: 800;
+        color: #1e293b;
+      }
+
+      .legend,
+      .slot-hint {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11.5px;
+        color: #64748b;
+        flex-wrap: wrap;
+      }
+      .legend-inline {
+        justify-content: flex-start;
+        margin-bottom: 12px;
+      }
+      .legend-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-left: 4px;
+      }
+      .legend-dot.available {
+        background: #22c55e;
+      }
+      .legend-dot.sebagian {
+        background: #f59e0b;
+      }
+      .legend-dot.penuh {
+        background: #ef4444;
+      }
+
+      .jadwal-calendar-card {
+        padding: 18px;
+      }
+      .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: start;
+        margin-bottom: 14px;
+      }
+      .calendar-title {
+        font-size: 15px;
+        font-weight: 800;
+        color: #0f172a;
+      }
+      .calendar-subtitle {
+        margin-top: 6px;
+        font-size: 12px;
+        color: #1e293b;
+      }
+      #selectedCount {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #f5f3ff;
+        color: #7c3aed;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 999px;
+        box-shadow: inset 0 0 0 1px rgba(124, 58, 237, 0.1);
+      }
+      .calendar-nav {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        white-space: nowrap;
+        margin-top: 2px;
+      }
+      .cal-arrow {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 999px;
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: default;
+        color: #0f172a;
+      }
+      .cal-arrow:disabled {
+        opacity: 0.45;
+      }
+      #calMonthLabel {
+        font-size: 13px;
+        font-weight: 700;
+        color: #0f172a;
+      }
+      .date-row {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 10px;
+      }
+      .date-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        min-height: 50px;
+        border-radius: 5px;
+        border: 1px solid transparent;
+        padding: 5px 8px;
+        cursor: pointer;
+        transition:
+          transform 0.15s ease,
+          border-color 0.15s ease,
+          box-shadow 0.15s ease;
+        background: #f8fafc;
+      }
+      .date-card:hover {
+        transform: translateY(-1px);
+      }
+      .date-card.available {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .date-card.sebagian {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .date-card.penuh {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .date-card.selected {
+        background-color: #29abe2;
+        border-color: #0ea5e9;
+        box-shadow: 0 8px 24px rgba(14, 165, 233, 0.18);
+        color: #ffffff;
+      }
+      .date-card.disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+      }
+      .hidden-month {
+        display: none;
+      }
+      .date-day {
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+      .date-number {
+        font-size: 10px;
+        font-weight: 400;
+      }
+
+      .slot-summary {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .summary-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-height: 84px;
+        border-radius: 18px;
+        padding: 14px 16px;
+        color: #0f172a;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+      }
+      .summary-card span {
+        margin-top: 6px;
+        font-size: 12px;
+        color: #475569;
+      }
+      .summary-full {
+        background: #0ea5e9;
+        color: #fff;
+        border-color: transparent;
+      }
+      .summary-full span {
+        color: rgba(255, 255, 255, 0.85);
+      }
+      .summary-morning {
+        background: #f8fafc;
+      }
+      .summary-afternoon {
+        background: #f8fafc;
+      }
+
+      .slot-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        overflow-y: auto;
+        max-height: 300px;
+      }
+      .slot-btn {
+        display: grid;
+        grid-template-rows: auto auto 1fr;
+        gap: 6px;
+        padding: 14px 12px;
+        border-radius: 14px;
+        border: 1.5px solid #e2e8f0;
+        background: #fff;
+        transition: all 0.15s ease;
+        cursor: pointer;
+      }
+      .slot-btn.available {
+        background: #fff;
+      }
+      .slot-btn.available:hover {
+        border-color: #0ea5e9;
+        background: #eff6ff;
+      }
+      .slot-btn.sebagian {
+        background: #fef3c7;
+        border-color: #fbbf24;
+      }
+      .slot-btn.penuh {
+        background: #fee2e2;
+        border-color: #fca5a5;
+        cursor: not-allowed;
+      }
+      .slot-btn.selected {
+        border-color: #0ea5e9;
+        background: #0ea5e9;
+        color: #fff;
+      }
+      .slot-btn.selected .slot-time,
+      .slot-btn.selected .slot-range,
+      .slot-btn.selected .slot-action {
+        color: #fff;
+      }
+      .slot-time {
+        font-size: 14px;
+        font-weight: 800;
+      }
+      .slot-range {
+        font-size: 12px;
+        color: #475569;
+      }
+      .slot-action {
+        font-size: 11px;
+        font-weight: 700;
+        color: #0f172a;
+      }
+
+      .slot-btn.penuh .slot-action {
+        color: #991b1b;
+      }
+
+      .cal-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .cal-month {
+        font-size: 13px;
+        font-weight: 800;
+        color: #1e293b;
+      }
+      .cal-arrow {
+        background: none;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        width: 26px;
+        height: 26px;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.15s;
+      }
+      .cal-arrow:hover {
+        background: #e0f2fe;
+      }
+
+      .cal-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 2px;
+      }
+      .cal-dayname {
+        font-size: 10px;
+        font-weight: 800;
+        color: #94a3b8;
+        text-align: center;
+        padding: 2px 0;
+      }
+      .cal-days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 3px;
+      }
+      .cal-cell {
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11.5px;
+        font-weight: 600;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.15s;
+        background: none;
+        color: #1e293b;
+      }
+      .cal-cell.empty {
+        cursor: default;
+      }
+      .cal-cell.available,
+      .rdp-day-available {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .cal-cell.sebagian,
+      .rdp-day-sebagian {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .cal-cell.penuh,
+      .rdp-day-penuh {
+        background: #fee2e2;
+        color: #991b1b;
+        cursor: not-allowed;
+      }
+      .cal-cell.picked,
+      .rdp-day_selected {
+        background: #0ea5e9 !important;
+        color: #fff !important;
+        font-weight: 800;
+      }
+      .cal-cell:not(.empty):not(.penuh):hover,
+      .rdp-day-available:hover,
+      .rdp-day-sebagian:hover {
+        filter: brightness(0.92);
+      }
+
+      .slot-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        overflow-y: auto;
+        max-height: 220px;
+      }
+      .slot-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 8px 6px;
+        border-radius: 8px;
+        border: 1.5px solid #e2e8f0;
+        cursor: pointer;
+        transition: all 0.15s;
+        background: #fff;
+      }
+      .slot-btn.available:hover {
+        border-color: #0ea5e9;
+        background: #e0f2fe;
+      }
+      .slot-btn.sebagian {
+        border-color: #fcd34d;
+        background: #fef3c7;
+      }
+      .slot-btn.penuh {
+        border-color: #fca5a5;
+        background: #fee2e2;
+        cursor: not-allowed;
+        opacity: 0.7;
+      }
+      .slot-btn.selected {
+        border-color: #0ea5e9 !important;
+        background: #0ea5e9 !important;
+      }
+      .slot-btn.selected .slot-time,
+      .slot-btn.selected .slot-action {
+        color: #fff !important;
+      }
+      .slot-time {
+        font-size: 13px;
+        font-weight: 800;
+        color: #1e293b;
+      }
+      .slot-action {
+        font-size: 10.5px;
+        font-weight: 600;
+        color: #64748b;
+        margin-top: 1px;
+      }
+      .slot-btn.penuh .slot-action {
+        color: #ef4444;
+      }
+
+      .action-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 20px 16px;
+        border-top: 1px solid #f1f5f9;
+      }
+      .btn-back {
+        background: none;
+        border: 1.5px solid #e2e8f0;
+        font-size: 13.5px;
+        font-weight: 700;
+        color: #64748b;
+        padding: 9px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .btn-back:hover {
+        background: #f8fafc;
+      }
+      .btn-next {
+        background: #0ea5e9;
+        border: none;
+        font-size: 13.5px;
+        font-weight: 800;
+        color: #fff;
+        padding: 9px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .btn-next:hover {
+        background: #0284c7;
+      }
+
+      @media (max-width: 900px) {
+        .panel-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
   </body>
 </html>
