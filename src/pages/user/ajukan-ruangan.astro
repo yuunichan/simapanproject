@@ -13,7 +13,11 @@ const rooms = [
     capacity: "100–200",
     status: "busy",
     fasilitas: ["Panggung", "LCD Besar", "Sound System", "AC", "Microphone"],
-    photos: ["/images/aula-1.jpg", "/images/aula-2.jpg", "/images/aula-3.jpg"],
+    photos: [
+      "../../../src/assets/aula1.jpg",
+      "../../../src/assets/aula2.jpg",
+      "../../../src/assets/aula3.jpg",
+    ],
   },
   {
     id: "mawar",
@@ -23,7 +27,11 @@ const rooms = [
     capacity: "10–30",
     status: "available",
     fasilitas: ["LCD", "AC", "Whiteboard"],
-    photos: ["/images/mawar-1.jpg"],
+    photos: [
+      "../../../src/assets/mawar1.jpg",
+      "../../../src/assets/mawar2.jpg",
+      "../../../src/assets/mawar3.jpg",
+    ],
   },
   {
     id: "control",
@@ -33,7 +41,11 @@ const rooms = [
     capacity: "0–10",
     status: "available",
     fasilitas: ["Monitor", "AC"],
-    photos: ["/images/control-1.jpg"],
+    photos: [
+      "../../../src/assets/controlroom1.jpg",
+      "../../../src/assets/controlroom2.jpg",
+      "../../../src/assets/controlroom3.jpg",
+    ],
   },
   {
     id: "data",
@@ -53,7 +65,11 @@ const rooms = [
     capacity: "5–15",
     status: "available",
     fasilitas: ["AC", "TV", "Whiteboard"],
-    photos: ["/images/kokpit-1.jpg"],
+    photos: [
+      "../../../src/assets/kokpit1.jpg",
+      "../../../src/assets/kokpit2.jpg",
+      "../../../src/assets/kokpit3.jpg",
+    ],
   },
 ];
 
@@ -112,6 +128,9 @@ const kalenderStatus: Record<string, "available" | "sebagian" | "penuh"> = {
   "2026-05-09": "available",
   "2026-05-10": "available",
 };
+
+const selectedRoom = rooms.find((room) => room.id === "mawar") ?? rooms[0];
+const photos = selectedRoom.photos;
 
 function getMonthRange(statusMap: Record<string, string>) {
   const dates = Object.keys(statusMap).sort();
@@ -418,29 +437,48 @@ function formatMonthLabel(monthKey: string) {
                   <!-- Foto carousel -->
                   <div class="carousel" id="carousel">
                     <div class="carousel-track" id="carouselTrack">
-                      <div class="carousel-slide">
-                        <div class="foto-placeholder"></div>
-                      </div>
-                      <div class="carousel-slide">
-                        <div class="foto-placeholder"></div>
-                      </div>
-                      <div class="carousel-slide">
-                        <div class="foto-placeholder"></div>
-                      </div>
+                      {
+                        photos.map((photoUrl) => (
+                          <div class="carousel-slide">
+                            <img
+                              src={photoUrl}
+                              alt="Foto ruangan"
+                              class="carousel-image"
+                              onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                            />
+                            <div
+                              class="foto-placeholder"
+                              style="display: none;"
+                            />
+                          </div>
+                        ))
+                      }
                     </div>
+
                     <button class="carousel-btn prev" id="carouselPrev"
                       >‹</button
                     >
                     <button class="carousel-btn next" id="carouselNext"
                       >›</button
                     >
+
                     <div class="carousel-badge lantai" id="badgeLantai">
-                      Lantai 2
+                      {selectedRoom.floor}
                     </div>
                     <div class="carousel-badge kapasitas" id="badgeKapasitas">
-                      👥 200 orang
+                      👥 {selectedRoom.capacity} orang
                     </div>
-                    <div class="carousel-dots" id="carouselDots"></div>
+
+                    <div class="carousel-dots" id="carouselDots">
+                      {
+                        photos.map((_, index) => (
+                          <span
+                            class={`dot${index === 0 ? " active" : ""}`}
+                            data-index={index}
+                          />
+                        ))
+                      }
+                    </div>
                   </div>
 
                   <!-- Info ruangan -->
@@ -537,7 +575,7 @@ function formatMonthLabel(monthKey: string) {
                                 type="button"
                               >
                                 <span class="slot-time">{j}</span>
-                                <span class="slot-range">- {endHour}</span>                                
+                                <span class="slot-range">- {endHour}</span>
                               </button>
                             );
                           })
@@ -730,92 +768,176 @@ function formatMonthLabel(monthKey: string) {
         cardMode?.scrollIntoView({ behavior: "smooth", block: "start" });
       });
 
-      // ====== Carousel ======
+      // // ====== Carousel ======
+      // let currentSlide = 0;
+      // let totalSlides = 0;
+      // const track = document.getElementById("carouselTrack");
+      // const dots = document.getElementById("carouselDots");
+
+      // function updateCarousel() {
+      //   if (!track || !dots || totalSlides === 0) {
+      //     return;
+      //   }
+      //   track.style.transform = `translateX(-${currentSlide * 100}%)`;
+      //   dots.querySelectorAll(".dot").forEach((d, i) => {
+      //     d.classList.toggle("active", i === currentSlide);
+      //   });
+      // }
+
+      // document.getElementById("carouselPrev")?.addEventListener("click", () => {
+      //   if (totalSlides > 0) {
+      //     currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+      //     updateCarousel();
+      //   }
+      // });
+      // document.getElementById("carouselNext")?.addEventListener("click", () => {
+      //   if (totalSlides > 0) {
+      //     currentSlide = (currentSlide + 1) % totalSlides;
+      //     updateCarousel();
+      //   }
+      // });
+
+      // function generateCarouselSlides(roomPhotos) {
+      //   if (!track || !dots) {
+      //     return;
+      //   }
+
+      //   track.innerHTML = "";
+      //   dots.innerHTML = "";
+
+      //   // Menggunakan nama variabel baru 'roomPhotos' agar tidak konflik dengan parameter
+      //   const validPhotos = Array.isArray(roomPhotos) ? roomPhotos : [];
+      //   totalSlides = validPhotos.length;
+
+      //   if (totalSlides === 0) {
+      //     const slide = document.createElement("div");
+      //     slide.className = "carousel-slide";
+      //     const placeholder = document.createElement("div");
+      //     placeholder.className = "foto-placeholder";
+      //     slide.appendChild(placeholder);
+      //     track.appendChild(slide);
+      //     totalSlides = 1;
+      //   } else {
+      //     validPhotos.forEach((photoUrl) => {
+      //       const slide = document.createElement("div");
+      //       slide.className = "carousel-slide";
+
+      //       const img = document.createElement("img");
+      //       img.src = photoUrl;
+      //       img.alt = "Foto ruangan";
+      //       img.className = "carousel-image";
+
+      //       // Mengatasi jika gambar gagal dimuat agar tidak merusak tampilan UI
+      //       img.onerror = function () {
+      //         this.style.display = "none";
+      //         const fallback = document.createElement("div");
+      //         fallback.className = "foto-placeholder";
+      //         slide.appendChild(fallback);
+      //       };
+
+      //       slide.appendChild(img);
+      //       track.appendChild(slide);
+      //     });
+      //   }
+
+      //   // Generate indicator dots
+      //   for (let i = 0; i < totalSlides; i++) {
+      //     const d = document.createElement("span");
+      //     d.className = "dot" + (i === 0 ? " active" : "");
+      //     dots.appendChild(d);
+      //   }
+
+      //   currentSlide = 0;
+      //   updateCarousel();
+      // }
+
+      // ====== STATE ======
       let currentSlide = 0;
+
+      // Ambil total slide langsung dari jumlah elemen yang berhasil dirender HTML
       const track = document.getElementById("carouselTrack");
       const dots = document.getElementById("carouselDots");
-      const totalSlides = 3;
+      let totalSlides = track ? track.children.length : 0;
 
       function updateCarousel() {
-        if (!track || !dots) {
-          return;
-        }
+        if (!track || !dots || totalSlides === 0) return;
         track.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+        // Update active dot
         dots.querySelectorAll(".dot").forEach((d, i) => {
           d.classList.toggle("active", i === currentSlide);
         });
       }
 
+      // Event handler tombol Next / Prev tetap dipertahankan
       document.getElementById("carouselPrev")?.addEventListener("click", () => {
-        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-        updateCarousel();
-      });
-      document.getElementById("carouselNext")?.addEventListener("click", () => {
-        currentSlide = (currentSlide + 1) % totalSlides;
-        updateCarousel();
-      });
-
-      if (dots) {
-        for (let i = 0; i < totalSlides; i++) {
-          const d = document.createElement("span");
-          d.className = "dot" + (i === 0 ? " active" : "");
-          dots.appendChild(d);
+        if (totalSlides > 0) {
+          currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+          updateCarousel();
         }
-      }
+      });
 
-      // ====== Room select ======
+      document.getElementById("carouselNext")?.addEventListener("click", () => {
+        if (totalSlides > 0) {
+          currentSlide = (currentSlide + 1) % totalSlides;
+          updateCarousel();
+        }
+      });
       const roomButtons = document.querySelectorAll(".room-item");
 
       roomButtons.forEach((btn) => {
         btn.addEventListener("click", () => {
+          // 1. Update status visual tombol aktif
           roomButtons.forEach((b) => b.classList.remove("selected"));
           btn.classList.add("selected");
 
+          // 2. Ambil data dari dataset room
           const roomData = btn.dataset.room;
           const r = roomData ? JSON.parse(roomData) : null;
-          if (!r) {
-            return;
-          }
+          if (!r) return;
 
+          // 3. Update Text Detail Ruangan, Lokasi, dan Badge
           const detailName = document.getElementById("detailName");
           const detailLoc = document.getElementById("detailLoc");
           const badgeLantai = document.getElementById("badgeLantai");
           const badgeKapasitas = document.getElementById("badgeKapasitas");
 
-          if (detailName) {
-            detailName.textContent = r.name;
-          }
-          if (detailLoc) {
-            detailLoc.textContent = `${r.floor} — ${r.gedung}`;
-          }
-          if (badgeLantai) {
-            badgeLantai.textContent = r.floor;
-          }
-          if (badgeKapasitas) {
+          if (detailName) detailName.textContent = r.name;
+          if (detailLoc) detailLoc.textContent = `${r.floor} — ${r.gedung}`;
+          if (badgeLantai) badgeLantai.textContent = r.floor;
+          if (badgeKapasitas)
             badgeKapasitas.textContent = `👥 ${r.capacity} orang`;
-          }
 
+          // 4. Update Tag Fasilitas
           const fl = document.getElementById("fasilitasList");
-          if (fl) {
+          if (fl && r.fasilitas) {
             fl.innerHTML = r.fasilitas
               .map((f) => `<span class="fas-tag">${f}</span>`)
               .join("");
           }
 
+          // 5. Update Gambar Carousel Langsung ke Element HTML Tanpa Generate Ulang
+          const slides = track?.querySelectorAll(".carousel-image");
+          if (slides && r.photos) {
+            r.photos.forEach((photoUrl, index) => {
+              if (slides[index]) {
+                slides[index].src = photoUrl;
+                slides[index].style.display = "block"; // Reset display jika tersembunyi
+              }
+            });
+            totalSlides = r.photos.length;
+          }
+
+          // 6. Mengatur State Tampilan Section Detail
+          if (emptyState) emptyState.style.display = "none";
+          if (roomDetail) roomDetail.style.display = "flex";
+
+          // 7. Reset Posisi Slide Carousel ke Awal & Update Bar Ringkasan
           currentSlide = 0;
           updateCarousel();
-
-          if (emptyState) {
-            emptyState.style.display = "none";
-          }
-          if (roomDetail) {
-            roomDetail.style.display = "flex";
-          }
-
           updateSummaryBar();
         });
       });
-
       // ====== Slot jam toggle ======
       const jamSummaryBadge = document.getElementById("jamSummaryBadge");
       const jamSummaryText = document.getElementById("jamSummaryText");
@@ -1336,7 +1458,7 @@ function formatMonthLabel(monthKey: string) {
       .carousel {
         position: relative;
         width: 100%;
-        height: 260px;
+        height: 600px;
         overflow: hidden;
         flex-shrink: 0;
         border-radius: 14px 14px 0 0;
@@ -1348,7 +1470,14 @@ function formatMonthLabel(monthKey: string) {
       }
       .carousel-slide {
         min-width: 100%;
+        flex-shrink: 0;
         height: 100%;
+      }
+      .carousel-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
       }
       .foto-placeholder {
         width: 100%;
