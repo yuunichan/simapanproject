@@ -223,6 +223,7 @@ body {
 
 /* User footer */
 .sidebar-footer {
+  margin-top: auto;   /* ← ini kuncinya, dorong ke bawah sidebar */
   padding: 14px 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 
@@ -818,7 +819,7 @@ tbody td {
 }
 /* ── Sidebar: Aktivitas Anda ── */
 .sidebar-activity {
-  margin-top: auto;
+  margin-top: 20pc;
   margin-left: 10px;
   margin-right: 10px;
   margin-bottom: 10px;

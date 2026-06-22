@@ -177,7 +177,7 @@ import '../../styles/global.css';
         // 2. Arahkan halaman berdasarkan role yang didapat
         if (role === 'superadmin') {
           console.log("Nilai role sebelum pindah:", role);
-          window.location.href = `/superadmin/kelolaadmin?role=${encodeURIComponent(role)}`;
+          window.location.href = `/superadmin/dashboard?role=${encodeURIComponent(role)}`;
         } else if(role === 'user') {
           window.location.href = `/user/dashboard?role=${encodeURIComponent(role)}`;
         } else if (role === 'admin') {
