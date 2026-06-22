@@ -223,8 +223,8 @@ body {
 
 /* User footer */
 .sidebar-footer {
-  margin-top: auto;   /* ← ini kuncinya, dorong ke bawah sidebar */
   padding: 14px 16px;
+  /* margin-top removed to pin elements together */
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 
   display: flex;
@@ -819,23 +819,32 @@ tbody td {
 }
 /* ── Sidebar: Aktivitas Anda ── */
 .sidebar-activity {
-  margin-top: 20pc;
+  margin-right: 16px;
   margin-left: 10px;
-  margin-right: 10px;
-  margin-bottom: 10px;
-
-  padding: 16px;
+  padding: 10px;
   border-radius: 10px;
   background-color: #ffffff8c;
+  align-self: stretch;
+  /* margin-top removed to pin elements together */
 }
+
+/* container to pin activity+footer to bottom */
+.sidebar-bottom {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 0 14px;
+}
+
 
 .sidebar-activity-label {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 200;
   letter-spacing: 0.05em;
   color: #b5895f;
   text-transform: uppercase;
-  margin: 0 0 5px 0;
+  margin: 0 0 10px 0;
 }
 
 .sidebar-activity-stats {
