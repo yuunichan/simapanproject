@@ -153,7 +153,7 @@ const dayNames = ["MIN", "SEN", "SEL", "RAB", "KAM", "JUM", "SAB"];
 
 function formatDayLabel(dateString: string) {
   const date = new Date(dateString);
-  return dayNames[date.getDay()];
+  // return dayNames[date.getDay()];
 }
 
 function formatMonthLabel(monthKey: string) {
@@ -172,9 +172,10 @@ function formatMonthLabel(monthKey: string) {
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap"
+      href="https://googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
       rel="stylesheet"
     />
+
     <link rel="stylesheet" href="../../src/styles/admin.css" />
   </head>
   <body>
@@ -252,9 +253,8 @@ function formatMonthLabel(monthKey: string) {
                 <line x1="12" y1="17" x2="12.01" y2="17"></line>
               </svg>
               <p class="alert-text">
-                Batas waktu pengajuan adalah <strong
-                  >H-1 sebelum kegiatan</strong
-                >. Pastikan pengajuan dilakukan tepat waktu.
+                Pilih mode kegiatan terlebih dahulu, lalu pilih ruangan. Batas
+                pengajuan <strong>H-1 sebelum kegiatan.</strong>
               </p>
             </div>
 
@@ -278,9 +278,7 @@ function formatMonthLabel(monthKey: string) {
                   </svg>
                 </div>
                 <div class="type-label">Full Offline</div>
-                <div class="type-desc">
-                  Kegiatan tatap muka di ruang yang dipilih
-                </div>
+                <div class="type-desc">Tatap muka di ruangan</div>
               </div>
 
               <!-- Hybrid Card -->
@@ -300,9 +298,7 @@ function formatMonthLabel(monthKey: string) {
                   </svg>
                 </div>
                 <div class="type-label">Hybrid</div>
-                <div class="type-desc">
-                  Kombinasi tatap muka dan virtual/online
-                </div>
+                <div class="type-desc">Tatap muka + virtual</div>
               </div>
             </div>
           </div>
@@ -541,24 +537,137 @@ function formatMonthLabel(monthKey: string) {
                                 type="button"
                               >
                                 <span class="slot-time">{j}</span>
-                                <span class="slot-range">- {endHour}</span>
-                                <span class="slot-action">{jamStatus[j]}</span>
+                                <span class="slot-range">- {endHour}</span>                                
                               </button>
                             );
                           })
                         }
                       </div>
+                      <!-- Ringkasan jam terpilih -->
+                      <div
+                        class="jam-summary-badge"
+                        id="jamSummaryBadge"
+                        style="display:none;"
+                      >
+                        🕐 <span id="jamSummaryText">—</span>
+                      </div>
                     </div>
                   </div>
                   <!-- /jadwal-grid -->
 
-                  <!-- Aksi -->
+                  <!-- ============ DETAIL KEGIATAN ============ -->
+                  <div class="card detail-kegiatan-card">
+                    <h5 class="card-title">
+                      <svg
+                        class="dk-title-icon"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path
+                          d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                        ></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                      </svg>
+                      Detail Kegiatan
+                    </h5>
+
+                    <!-- Warning Banner -->
+                    <div class="alert-warning">
+                      <svg
+                        class="alert-icon"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path
+                          d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+                        ></path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                      </svg>
+                      <p class="alert-text">
+                        Pengajuan paling lambat <strong>H-1</strong> sebelum kegiatan.
+                      </p>
+                    </div>
+
+                    <div class="dk-form-grid">
+                      <div class="dk-field">
+                        <label for="judulKegiatan">Judul Kegiatan</label>
+                        <input
+                          type="text"
+                          id="judulKegiatan"
+                          placeholder="Judul kegiatan..."
+                        />
+                      </div>
+                      <div class="dk-field">
+                        <label for="jumlahPeserta">Jumlah Peserta</label>
+                        <input
+                          type="number"
+                          id="jumlahPeserta"
+                          placeholder="Jumlah orang"
+                          min="1"
+                        />
+                      </div>
+                      <div class="dk-field">
+                        <label for="unitKerja">Unit Kerja</label>
+                        <input
+                          type="text"
+                          id="unitKerja"
+                          placeholder="Unit kerja......"
+                        />
+                      </div>
+                      <div class="dk-field">
+                        <label for="noWhatsapp">No WhatsApp</label>
+                        <input
+                          type="tel"
+                          id="noWhatsapp"
+                          placeholder="Isi dengan awalan +62"
+                        />
+                      </div>
+                      <div class="dk-field dk-field-full">
+                        <label for="keteranganTambahan"
+                          >Keterangan Tambahan</label
+                        >
+                        <textarea
+                          id="keteranganTambahan"
+                          rows="3"
+                          placeholder="Kebutuhan khusus, peralatan, dll..."
+                        ></textarea>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /detail-kegiatan-card -->
+
+                  <!-- Ringkasan & Aksi -->
+                  <div class="summary-bar" id="summaryBar">
+                    <div class="summary-bar-info">
+                      <div class="summary-bar-item">
+                        <span class="summary-bar-label">RUANGAN</span>
+                        <span class="summary-bar-value" id="sumRuangan">—</span>
+                      </div>
+                      <div class="summary-bar-item">
+                        <span class="summary-bar-label">TANGGAL</span>
+                        <span class="summary-bar-value" id="sumTanggal">—</span>
+                      </div>
+                      <div class="summary-bar-item">
+                        <span class="summary-bar-label">JAM</span>
+                        <span class="summary-bar-value" id="sumJam">—</span>
+                      </div>
+                    </div>
+                  </div>
+
                   <div class="action-row">
-                    <button class="btn-back" id="btnGantiMode"
-                      >← Ganti Mode</button
+                    <button class="btn-back" id="btnGantiMode">← Kembali</button
                     >
                     <button class="btn-next" id="btnLanjut"
-                      >Lanjut ke Konfirmasi →</button
+                      >Lanjut Konfirmasi →</button
                     >
                   </div>
                 </div>
@@ -702,11 +811,42 @@ function formatMonthLabel(monthKey: string) {
           if (roomDetail) {
             roomDetail.style.display = "flex";
           }
+
+          updateSummaryBar();
         });
       });
 
       // ====== Slot jam toggle ======
-      document.querySelectorAll(".slot-btn:not([disabled])").forEach((btn) => {
+      const jamSummaryBadge = document.getElementById("jamSummaryBadge");
+      const jamSummaryText = document.getElementById("jamSummaryText");
+
+      function updateJamSummary() {
+        const selected = [...document.querySelectorAll(".slot-btn.selected")]
+          .map((b) => b.dataset.jam)
+          .filter(Boolean)
+          .sort();
+
+        if (!jamSummaryBadge || !jamSummaryText) {
+          return;
+        }
+
+        if (selected.length === 0) {
+          jamSummaryBadge.style.display = "none";
+          return;
+        }
+
+        const start = selected[0];
+        const lastHour = Number(selected[selected.length - 1].slice(0, 2)) + 1;
+        const end = `${String(lastHour).padStart(2, "0")}:00`;
+        const dayCount = getSelectedDayCount();
+
+        jamSummaryText.innerHTML = `<strong>${start} – ${end}</strong>${dayCount > 1 ? ` · <span class="jam-summary-hari">${dayCount} hari</span>` : ""}`;
+        jamSummaryBadge.style.display = "flex";
+
+        updateSummaryBar();
+      }
+
+      document.querySelectorAll(".slot-btn:not(.penuh)").forEach((btn) => {
         btn.addEventListener("click", () => {
           btn.classList.toggle("selected");
           const action = btn.querySelector(".slot-action");
@@ -715,6 +855,7 @@ function formatMonthLabel(monthKey: string) {
               ? "✓ Dipilih"
               : "Pilih";
           }
+          updateJamSummary();
         });
       });
 
@@ -743,10 +884,40 @@ function formatMonthLabel(monthKey: string) {
         );
       }
 
+      function getSelectedDayCount() {
+        if (!selectedStart) {
+          return 0;
+        }
+        return selectedEnd ? getDayDiff(selectedStart, selectedEnd) + 1 : 1;
+      }
+
       function formatMonthLabel(monthKey) {
         const [year, month] = monthKey.split("-");
         const date = new Date(`${year}-${month}-01`);
         return date.toLocaleString("id-ID", { month: "long", year: "numeric" });
+      }
+
+      function formatTanggalRange(start, end) {
+        if (!start) {
+          return "—";
+        }
+        const dStart = new Date(start);
+        const optsShort = { day: "numeric" };
+        const optsFull = { day: "numeric", month: "long", year: "numeric" };
+
+        if (!end || end === start) {
+          return dStart.toLocaleDateString("id-ID", optsFull);
+        }
+
+        const dEnd = new Date(end);
+        const sameMonth =
+          dStart.getMonth() === dEnd.getMonth() &&
+          dStart.getFullYear() === dEnd.getFullYear();
+
+        if (sameMonth) {
+          return `${dStart.toLocaleDateString("id-ID", optsShort)} – ${dEnd.toLocaleDateString("id-ID", optsFull)}`;
+        }
+        return `${dStart.toLocaleDateString("id-ID", optsFull)} – ${dEnd.toLocaleDateString("id-ID", optsFull)}`;
       }
 
       function updateMonthView() {
@@ -785,12 +956,13 @@ function formatMonthLabel(monthKey: string) {
           btn.classList.toggle("selected", inRange);
         });
 
-        const count = selectedEnd
-          ? getDayDiff(selectedStart, selectedEnd) + 1
-          : 1;
+        const count = getSelectedDayCount();
         if (selectedCount) {
           selectedCount.textContent = `${count}/5 hari`;
         }
+
+        updateJamSummary();
+        updateSummaryBar();
       }
 
       dateCards.forEach((btn) => {
@@ -835,6 +1007,42 @@ function formatMonthLabel(monthKey: string) {
         }
       });
 
+      // ====== Ringkasan bar bawah (Ruangan / Tanggal / Jam) ======
+      function updateSummaryBar() {
+        const sumRuangan = document.getElementById("sumRuangan");
+        const sumTanggal = document.getElementById("sumTanggal");
+        const sumJam = document.getElementById("sumJam");
+
+        const roomName =
+          document.querySelector(".room-item.selected .room-name")
+            ?.textContent ?? "—";
+
+        const dayCount = getSelectedDayCount();
+        const tanggalText = selectedStart
+          ? `${formatTanggalRange(selectedStart, selectedEnd)}${dayCount > 1 ? ` (${dayCount} hari)` : ""}`
+          : "—";
+
+        const selectedSlots = [
+          ...document.querySelectorAll(".slot-btn.selected"),
+        ]
+          .map((b) => b.dataset.jam)
+          .filter(Boolean)
+          .sort();
+
+        let jamText = "—";
+        if (selectedSlots.length > 0) {
+          const start = selectedSlots[0];
+          const lastHour =
+            Number(selectedSlots[selectedSlots.length - 1].slice(0, 2)) + 1;
+          const end = `${String(lastHour).padStart(2, "0")}:00`;
+          jamText = `${start} – ${end} WIB`;
+        }
+
+        if (sumRuangan) sumRuangan.textContent = roomName;
+        if (sumTanggal) sumTanggal.textContent = tanggalText;
+        if (sumJam) sumJam.textContent = jamText;
+      }
+
       updateMonthView();
       updateSelectedDates();
 
@@ -848,6 +1056,17 @@ function formatMonthLabel(monthKey: string) {
         const room =
           document.querySelector(".room-item.selected")?.dataset.id ?? "";
 
+        const judulKegiatan =
+          document.getElementById("judulKegiatan")?.value.trim() ?? "";
+        const jumlahPeserta =
+          document.getElementById("jumlahPeserta")?.value.trim() ?? "";
+        const unitKerja =
+          document.getElementById("unitKerja")?.value.trim() ?? "";
+        const noWhatsapp =
+          document.getElementById("noWhatsapp")?.value.trim() ?? "";
+        const keteranganTambahan =
+          document.getElementById("keteranganTambahan")?.value.trim() ?? "";
+
         if (!selectedMode) {
           alert(
             "Harap pilih mode kegiatan (Full Offline / Hybrid) terlebih dahulu.",
@@ -858,10 +1077,29 @@ function formatMonthLabel(monthKey: string) {
           alert("Harap pilih ruangan, tanggal, dan minimal 1 slot jam.");
           return;
         }
+        if (!judulKegiatan || !jumlahPeserta || !unitKerja || !noWhatsapp) {
+          alert("Harap lengkapi semua detail kegiatan yang wajib diisi.");
+          return;
+        }
 
         const tglISO = selectedStart;
+        const tglAkhirISO = selectedEnd || selectedStart;
 
-        window.location.href = `./ajukan/konfirmasi?role=${encodeURIComponent(role)}&mode=${selectedMode}&room=${room}&tgl=${tglISO}&jam=${slots}`;
+        const query = new URLSearchParams({
+          role,
+          mode: selectedMode,
+          room,
+          tgl: tglISO,
+          tglAkhir: tglAkhirISO,
+          jam: slots,
+          judul: judulKegiatan,
+          peserta: jumlahPeserta,
+          unit: unitKerja,
+          wa: noWhatsapp,
+          ket: keteranganTambahan,
+        });
+
+        window.location.href = `./ajukan/konfirmasi?${query.toString()}`;
       });
     </script>
 
@@ -928,6 +1166,7 @@ function formatMonthLabel(monthKey: string) {
         display: flex;
         padding: 10px 12px 0;
         border-bottom: 2px solid #f1f5f9;
+
         gap: 0;
       }
       .gtab {
@@ -948,7 +1187,6 @@ function formatMonthLabel(monthKey: string) {
       .gtab.active {
         color: #0ea5e9;
         border-bottom-color: #0ea5e9;
-        font-weight: 800;
       }
 
       .gedung-foto {
@@ -1469,8 +1707,8 @@ function formatMonthLabel(monthKey: string) {
         color: #fff;
       }
       .slot-time {
-        font-size: 14px;
-        font-weight: 800;
+        font-size: 13px;
+        font-weight: 600;
       }
       .slot-range {
         font-size: 12px;
@@ -1575,67 +1813,121 @@ function formatMonthLabel(monthKey: string) {
         filter: brightness(0.92);
       }
 
-      .slot-grid {
+      /* ===== Ringkasan jam terpilih (di bawah slot-grid) ===== */
+      .jam-summary-badge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #e0f2fe;
+        border: 1px solid #7dd3fc;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 13px;
+        color: #0369a1;
+        margin-top: 4px;
+      }
+      .jam-summary-badge strong {
+        color: #0c4a6e;
+      }
+      .jam-summary-hari {
+        color: #db2777;
+        font-weight: 800;
+      }
+
+      /* ===== Detail Kegiatan card ===== */
+      .detail-kegiatan-card {
+        margin: 0 20px 16px;
+        padding: 20px;
+        box-shadow: none;
+        border: 1px solid #f1f5f9;
+      }
+      .dk-title-icon {
+        width: 17px;
+        height: 17px;
+        color: #0ea5e9;
+        vertical-align: -3px;
+        margin-right: 6px;
+      }
+      .dk-form-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 6px;
-        overflow-y: auto;
-        max-height: 220px;
+        gap: 16px 20px;
       }
-      .slot-btn {
+      .dk-field {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        padding: 8px 6px;
+        gap: 6px;
+      }
+      .dk-field-full {
+        grid-column: 1 / -1;
+      }
+      .dk-field label {
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #7b7f85;
+      }
+      .dk-field input,
+      .dk-field textarea {
+        font-family: inherit;
+        font-size: 13.5px;
+        color: #1e293b;
+        border: 1.5px solid #faeaa9;
         border-radius: 8px;
-        border: 1.5px solid #e2e8f0;
-        cursor: pointer;
-        transition: all 0.15s;
+        padding: 10px 14px;
+        background: #f8fafc;
+        transition:
+          border-color 0.15s,
+          background 0.15s;
+        resize: vertical;
+      }
+      .dk-field input::placeholder,
+      .dk-field textarea::placeholder {
+        color: #94a3b8;
+      }
+      .dk-field input:focus,
+      .dk-field textarea:focus {
+        outline: none;
+        border-color: #0ea5e9;
         background: #fff;
       }
-      .slot-btn.available:hover {
-        border-color: #0ea5e9;
-        background: #e0f2fe;
+
+      /* ===== Summary bar (Ruangan / Tanggal / Jam) ===== */
+      .summary-bar {
+        margin: 0 20px 16px;
+        background: linear-gradient(120deg, #0ea5e9, #38bdf8);
+        border-radius: 12px;
+        padding: 10px 16px;
       }
-      .slot-btn.sebagian {
-        border-color: #fcd34d;
-        background: #fef3c7;
+      .summary-bar-info {
+        display: flex;
+        gap: 28px;
       }
-      .slot-btn.penuh {
-        border-color: #fca5a5;
-        background: #fee2e2;
-        cursor: not-allowed;
-        opacity: 0.7;
+      .summary-bar-item {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        margin-right: auto;
       }
-      .slot-btn.selected {
-        border-color: #0ea5e9 !important;
-        background: #0ea5e9 !important;
-      }
-      .slot-btn.selected .slot-time,
-      .slot-btn.selected .slot-action {
-        color: #fff !important;
-      }
-      .slot-time {
-        font-size: 13px;
+      .summary-bar-label {
+        font-size: 9px;
         font-weight: 800;
-        color: #1e293b;
+        letter-spacing: 0.08em;
+        color: rgba(255, 255, 255, 0.75);
       }
-      .slot-action {
-        font-size: 10.5px;
-        font-weight: 600;
-        color: #64748b;
-        margin-top: 1px;
-      }
-      .slot-btn.penuh .slot-action {
-        color: #ef4444;
+      .summary-bar-value {
+        font-size: 12.5px;
+        font-weight: 800;
+        color: #fff;
       }
 
       .action-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 12px 20px 16px;
-        border-top: 1px solid #f1f5f9;
+        gap: 12px;
+        padding: 0 20px 20px;
       }
       .btn-back {
         background: none;
@@ -1652,12 +1944,13 @@ function formatMonthLabel(monthKey: string) {
         background: #f8fafc;
       }
       .btn-next {
+        flex: 1;
         background: #0ea5e9;
         border: none;
-        font-size: 13.5px;
+        font-size: 14px;
         font-weight: 800;
         color: #fff;
-        padding: 9px 24px;
+        padding: 12px 24px;
         border-radius: 8px;
         cursor: pointer;
         transition: background 0.15s;
@@ -1669,6 +1962,16 @@ function formatMonthLabel(monthKey: string) {
       @media (max-width: 900px) {
         .panel-grid {
           grid-template-columns: 1fr;
+        }
+        .dk-form-grid {
+          grid-template-columns: 1fr;
+        }
+        .summary-bar-info {
+          flex-direction: column;
+          gap: 10px;
+        }
+        .summary-bar-item {
+          margin-right: 0;
         }
       }
     </style>

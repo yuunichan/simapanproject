@@ -13,7 +13,7 @@ import Sidebar from "../../components/sidebar_user.astro";
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display&display=swap"
+      href="https://googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="../../../src/styles/admin.css" />
@@ -176,7 +176,7 @@ import Sidebar from "../../components/sidebar_user.astro";
     <script>
       // Active nav highlight
       document.querySelectorAll(".nav-item").forEach((item) => {
-        item.addEventListener("click", (e) => {          
+        item.addEventListener("click", (e) => {
           document
             .querySelectorAll(".nav-item")
             .forEach((i) => i.classList.remove("active"));
@@ -193,7 +193,7 @@ import Sidebar from "../../components/sidebar_user.astro";
           console.log(`${action} for ticket: ${ticket}`);
           // TODO: handle tiket/detail actions
         });
-      });      
+      });
 
       function tampilkanTanggal() {
         const hariIni = new Date();
